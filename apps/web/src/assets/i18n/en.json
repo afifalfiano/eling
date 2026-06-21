@@ -1,0 +1,50 @@
+{
+  "app": {
+    "searchAriaLabel": "Search",
+    "logout": "Logout",
+    "exportAriaLabel": "Export JSON",
+    "langToggle": "ID"
+  },
+  "login": {
+    "title": "Eling",
+    "usernameLabel": "Username",
+    "passwordLabel": "Password",
+    "submit": "Sign in",
+    "loading": "Signing in...",
+    "error": "Wrong username or password."
+  },
+  "feed": {
+    "loading": "Loading...",
+    "empty": "Empty — your head is clear.",
+    "openCount": "{{ count }} open loops"
+  },
+  "capture": {
+    "placeholder": "What's on your mind?",
+    "captureAriaLabel": "Capture",
+    "loopLabel": "○ loop",
+    "noteLabel": "· note"
+  },
+  "context": {
+    "kerja": "work",
+    "pribadi": "personal",
+    "other": "other"
+  },
+  "loopDetail": {
+    "backAriaLabel": "Back",
+    "nextStepLabel": "Next step",
+    "nextStepPlaceholder": "Next action...",
+    "save": "Save",
+    "statusLabel": "Status",
+    "markDone": "✓ Mark done",
+    "blocked": "Blocked / waiting",
+    "waiting": "Waiting on discussion",
+    "reopen": "Reopen",
+    "blockedReasonLabel": "Blocked reason",
+    "blockedReasonPlaceholder": "Why is it blocked?",
+    "notFound": "Loop not found."
+  },
+  "search": {
+    "placeholder": "Search all history...",
+    "noResults": "No results for \"{{ query }}\""
+  }
+}

@@ -1,0 +1,50 @@
+{
+  "app": {
+    "searchAriaLabel": "Cari",
+    "logout": "Keluar",
+    "exportAriaLabel": "Ekspor JSON",
+    "langToggle": "EN"
+  },
+  "login": {
+    "title": "Eling",
+    "usernameLabel": "Username",
+    "passwordLabel": "Password",
+    "submit": "Masuk",
+    "loading": "Masuk...",
+    "error": "Username atau password salah."
+  },
+  "feed": {
+    "loading": "Memuat...",
+    "empty": "Kosong — kepalamu lega.",
+    "openCount": "{{ count }} loop terbuka"
+  },
+  "capture": {
+    "placeholder": "Apa yang ada di kepalamu?",
+    "captureAriaLabel": "Tangkap",
+    "loopLabel": "○ loop",
+    "noteLabel": "· note"
+  },
+  "context": {
+    "kerja": "kerja",
+    "pribadi": "pribadi",
+    "other": "other"
+  },
+  "loopDetail": {
+    "backAriaLabel": "Kembali",
+    "nextStepLabel": "Next step",
+    "nextStepPlaceholder": "Langkah berikutnya...",
+    "save": "Simpan",
+    "statusLabel": "Status",
+    "markDone": "✓ Tandai selesai",
+    "blocked": "Blocked / menunggu",
+    "waiting": "Menunggu diskusi",
+    "reopen": "Buka kembali",
+    "blockedReasonLabel": "Alasan blocked",
+    "blockedReasonPlaceholder": "Kenapa blocked?",
+    "notFound": "Loop tidak ditemukan."
+  },
+  "search": {
+    "placeholder": "Cari di semua riwayat...",
+    "noResults": "Tidak ada hasil untuk \"{{ query }}\""
+  }
+}
