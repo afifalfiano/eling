@@ -73,4 +73,20 @@ export class ItemService {
     );
     return raw.map(toItem);
   }
+
+  async downloadExport(): Promise<void> {
+    const raw = await firstValueFrom(
+      this.http.get<Record<string, unknown>[]>('/api/items')
+    );
+    const items = raw.map(toItem);
+    const blob = new Blob([JSON.stringify(items, null, 2)], {
+      type: 'application/json',
+    });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `eling-export-${new Date().toISOString().slice(0, 10)}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+  }
 }
