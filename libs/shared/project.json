@@ -20,9 +20,10 @@
       }
     },
     "test": {
-      "executor": "@nx/vite:test",
+      "executor": "nx:run-commands",
       "options": {
-        "configFile": "libs/shared/vite.config.ts"
+        "command": "npx vitest run",
+        "cwd": "libs/shared"
       }
     }
   }
