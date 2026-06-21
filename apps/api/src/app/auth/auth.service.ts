@@ -1,26 +1,44 @@
-import { Injectable } from '@nestjs/common';
+import { ConflictException, Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcryptjs';
+import { PrismaService } from '../prisma/prisma.service';
 
 @Injectable()
 export class AuthService {
-  constructor(private readonly jwt: JwtService) {}
+  constructor(
+    private readonly jwt: JwtService,
+    private readonly prisma: PrismaService,
+  ) {}
 
-  async login(
-    username: string,
+  async login(email: string, password: string): Promise<{ access_token: string }> {
+    const user = await this.prisma.user.findUnique({ where: { email } });
+    if (!user) throw new UnauthorizedException();
+    const valid = await bcrypt.compare(password, user.password);
+    if (!valid) throw new UnauthorizedException();
+    const token = await this.jwt.signAsync({ sub: user.id });
+    return { access_token: token };
+  }
+
+  async register(
+    email: string,
     password: string,
-  ): Promise<{ access_token: string } | null> {
-    const expectedUsername = process.env['AUTH_USERNAME'];
-    const hashB64 = process.env['AUTH_PASSWORD_HASH'];
+    sessionId: string | undefined,
+  ): Promise<{ access_token: string }> {
+    const existing = await this.prisma.user.findUnique({ where: { email } });
+    if (existing) throw new ConflictException('Email already registered');
 
-    if (!expectedUsername || !hashB64) return null;
-    if (username !== expectedUsername) return null;
+    const hash = await bcrypt.hash(password, 10);
 
-    const hash = Buffer.from(hashB64, 'base64').toString('utf-8');
-    const valid = await bcrypt.compare(password, hash);
-    if (!valid) return null;
+    const user = await this.prisma.$transaction(async (tx) => {
+      const created = await tx.user.create({ data: { email, password: hash } });
+      await tx.item.updateMany({
+        where: { sessionId },
+        data: { userId: created.id, sessionId: null },
+      });
+      return created;
+    });
 
-    const token = await this.jwt.signAsync({ sub: username });
+    const token = await this.jwt.signAsync({ sub: user.id });
     return { access_token: token };
   }
 }

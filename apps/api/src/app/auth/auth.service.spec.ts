@@ -1,9 +1,16 @@
 import { Test } from '@nestjs/testing';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcryptjs';
+import { ConflictException, UnauthorizedException } from '@nestjs/common';
 import { AuthService } from './auth.service';
+import { PrismaService } from '../prisma/prisma.service';
 
-const mockJwtService = { signAsync: jest.fn() };
+const mockJwt = { signAsync: jest.fn() };
+const mockPrisma = {
+  user: { findUnique: jest.fn(), create: jest.fn() },
+  item: { updateMany: jest.fn() },
+  $transaction: jest.fn(),
+};
 
 describe('AuthService', () => {
   let service: AuthService;
@@ -12,43 +19,84 @@ describe('AuthService', () => {
     const module = await Test.createTestingModule({
       providers: [
         AuthService,
-        { provide: JwtService, useValue: mockJwtService },
+        { provide: JwtService, useValue: mockJwt },
+        { provide: PrismaService, useValue: mockPrisma },
       ],
     }).compile();
     service = module.get(AuthService);
     jest.clearAllMocks();
   });
 
-  beforeEach(async () => {
-    const hash = await bcrypt.hash('secret123', 10);
-    process.env['AUTH_USERNAME'] = 'afif';
-    process.env['AUTH_PASSWORD_HASH'] = Buffer.from(hash).toString('base64');
-    process.env['JWT_SECRET'] = 'test-secret';
+  describe('login()', () => {
+    it('returns access_token when credentials are valid', async () => {
+      const hash = await bcrypt.hash('secret123', 10);
+      mockPrisma.user.findUnique.mockResolvedValue({ id: 'user-1', email: 'a@b.com', password: hash });
+      mockJwt.signAsync.mockResolvedValue('signed.jwt');
+
+      const result = await service.login('a@b.com', 'secret123');
+
+      expect(result).toEqual({ access_token: 'signed.jwt' });
+      expect(mockJwt.signAsync).toHaveBeenCalledWith({ sub: 'user-1' });
+    });
+
+    it('throws UnauthorizedException when user not found', async () => {
+      mockPrisma.user.findUnique.mockResolvedValue(null);
+
+      await expect(service.login('x@x.com', 'pw')).rejects.toBeInstanceOf(UnauthorizedException);
+    });
+
+    it('throws UnauthorizedException when password is wrong', async () => {
+      const hash = await bcrypt.hash('correct', 10);
+      mockPrisma.user.findUnique.mockResolvedValue({ id: 'u', email: 'a@b.com', password: hash });
+
+      await expect(service.login('a@b.com', 'wrong')).rejects.toBeInstanceOf(UnauthorizedException);
+    });
   });
 
-  it('returns access_token when credentials are valid', async () => {
-    mockJwtService.signAsync.mockResolvedValue('signed.jwt.token');
-    const result = await service.login('afif', 'secret123');
-    expect(result).toEqual({ access_token: 'signed.jwt.token' });
-    expect(mockJwtService.signAsync).toHaveBeenCalledWith({ sub: 'afif' });
-  });
+  describe('register()', () => {
+    it('creates user, merges anon items, and returns access_token', async () => {
+      mockPrisma.user.findUnique.mockResolvedValue(null);
+      const newUser = { id: 'user-new', email: 'new@b.com', password: 'hash' };
+      mockPrisma.$transaction.mockImplementation(async (fn: (tx: typeof mockPrisma) => Promise<unknown>) =>
+        fn(mockPrisma),
+      );
+      mockPrisma.user.create.mockResolvedValue(newUser);
+      mockPrisma.item.updateMany.mockResolvedValue({ count: 3 });
+      mockJwt.signAsync.mockResolvedValue('new.jwt');
 
-  it('returns null when username is wrong', async () => {
-    const result = await service.login('wrong', 'secret123');
-    expect(result).toBeNull();
-    expect(mockJwtService.signAsync).not.toHaveBeenCalled();
-  });
+      const result = await service.register('new@b.com', 'password123', 'anon-sid');
 
-  it('returns null when password is wrong', async () => {
-    const result = await service.login('afif', 'wrongpassword');
-    expect(result).toBeNull();
-    expect(mockJwtService.signAsync).not.toHaveBeenCalled();
-  });
+      expect(result).toEqual({ access_token: 'new.jwt' });
+      expect(mockPrisma.item.updateMany).toHaveBeenCalledWith({
+        where: { sessionId: 'anon-sid' },
+        data: { userId: 'user-new', sessionId: null },
+      });
+    });
 
-  it('returns null when env vars are missing', async () => {
-    delete process.env['AUTH_USERNAME'];
-    delete process.env['AUTH_PASSWORD_HASH'];
-    const result = await service.login('afif', 'secret123');
-    expect(result).toBeNull();
+    it('throws ConflictException when email already exists', async () => {
+      mockPrisma.user.findUnique.mockResolvedValue({ id: 'existing' });
+
+      await expect(service.register('exists@b.com', 'pw', undefined)).rejects.toBeInstanceOf(
+        ConflictException,
+      );
+    });
+
+    it('works without sessionId (no items to merge)', async () => {
+      mockPrisma.user.findUnique.mockResolvedValue(null);
+      mockPrisma.$transaction.mockImplementation(async (fn: (tx: typeof mockPrisma) => Promise<unknown>) =>
+        fn(mockPrisma),
+      );
+      mockPrisma.user.create.mockResolvedValue({ id: 'u2', email: 'c@d.com', password: 'h' });
+      mockPrisma.item.updateMany.mockResolvedValue({ count: 0 });
+      mockJwt.signAsync.mockResolvedValue('jwt2');
+
+      const result = await service.register('c@d.com', 'pw', undefined);
+
+      expect(result).toEqual({ access_token: 'jwt2' });
+      expect(mockPrisma.item.updateMany).toHaveBeenCalledWith({
+        where: { sessionId: undefined },
+        data: { userId: 'u2', sessionId: null },
+      });
+    });
   });
 });

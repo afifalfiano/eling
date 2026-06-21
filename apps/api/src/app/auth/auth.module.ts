@@ -3,9 +3,12 @@ import { JwtModule } from '@nestjs/jwt';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { JwtAuthGuard } from './jwt.guard';
+import { SessionMiddleware } from './session.middleware';
+import { PrismaModule } from '../prisma/prisma.module';
 
 @Module({
   imports: [
+    PrismaModule,
     JwtModule.registerAsync({
       useFactory: () => ({
         secret: process.env['JWT_SECRET'] ?? 'dev-secret-change-me',
@@ -14,7 +17,7 @@ import { JwtAuthGuard } from './jwt.guard';
     }),
   ],
   controllers: [AuthController],
-  providers: [AuthService, JwtAuthGuard],
-  exports: [JwtModule, JwtAuthGuard],
+  providers: [AuthService, JwtAuthGuard, SessionMiddleware],
+  exports: [JwtModule, JwtAuthGuard, SessionMiddleware],
 })
 export class AuthModule {}
