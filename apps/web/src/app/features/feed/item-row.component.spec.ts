@@ -1,15 +1,16 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { Item } from '@eling/shared';
+import { Context, ItemType, LoopStatus } from '@eling/shared';
+import type { Item } from '@eling/shared';
 import { ItemRowComponent } from './item-row.component';
 
 const mkItem = (overrides: Partial<Item> = {}): Item => ({
   id: '1',
-  type: 'loop',
+  type: ItemType.Loop,
   text: 'fix bug',
-  context: 'kerja',
+  context: Context.Kerja,
   createdAt: new Date(),
   updatedAt: new Date(),
-  status: 'open',
+  status: LoopStatus.Open,
   ...overrides,
 });
 
@@ -30,14 +31,14 @@ describe('ItemRowComponent', () => {
   });
 
   it('adds done style when status is done', async () => {
-    fixture.componentRef.setInput('item', mkItem({ status: 'done' }));
+    fixture.componentRef.setInput('item', mkItem({ status: LoopStatus.Done }));
     await fixture.whenStable();
     const el = fixture.nativeElement.querySelector('[data-testid="item-text"]');
     expect(el?.classList.contains('line-through')).toBe(true);
   });
 
   it('renders note with dot indicator', async () => {
-    fixture.componentRef.setInput('item', mkItem({ type: 'note', status: undefined }));
+    fixture.componentRef.setInput('item', mkItem({ type: ItemType.Note, status: undefined }));
     await fixture.whenStable();
     expect(fixture.nativeElement.querySelector('[data-testid="note-dot"]')).toBeTruthy();
   });

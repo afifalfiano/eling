@@ -1,4 +1,5 @@
 import { Test } from '@nestjs/testing';
+import { ItemType, LoopStatus } from '@eling/shared';
 import { JwtAuthGuard } from '../auth/jwt.guard';
 import { ItemsController } from './items.controller';
 import { ItemsService } from './items.service';
@@ -48,10 +49,10 @@ describe('ItemsController', () => {
     mockService.findAll.mockResolvedValue([]);
     const req = makeReq({ userId: 'user-1', sessionId: undefined });
 
-    await controller.findAll('open', 'loop', undefined, req);
+    await controller.findAll(LoopStatus.Open, ItemType.Loop, undefined, req);
 
     expect(mockService.findAll).toHaveBeenCalledWith(
-      { status: 'open', type: 'loop', context: undefined },
+      { status: LoopStatus.Open, type: ItemType.Loop, context: undefined },
       { userId: 'user-1', sessionId: undefined },
     );
   });

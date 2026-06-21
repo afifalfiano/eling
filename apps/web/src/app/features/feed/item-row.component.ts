@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
 import type { Item } from '@eling/shared';
+import { Context, LoopStatus } from '@eling/shared';
 
 @Component({
   selector: 'app-item-row',
@@ -22,15 +23,15 @@ export class ItemRowComponent {
   }
 
   protected get isDone(): boolean {
-    return this.item().status === 'done';
+    return this.item().status === LoopStatus.Done;
   }
 
   protected get contextColor(): string {
-    const map: Record<string, string> = {
-      kerja: 'text-ctx-kerja bg-blue-50',
-      pribadi: 'text-ctx-pribadi bg-amber-50',
-      other: 'text-ctx-other bg-gray-50',
+    const map: Record<Context, string> = {
+      [Context.Kerja]: 'text-ctx-kerja bg-blue-50',
+      [Context.Pribadi]: 'text-ctx-pribadi bg-amber-50',
+      [Context.Other]: 'text-ctx-other bg-gray-50',
     };
-    return map[this.item().context] ?? map['other'];
+    return map[this.item().context] ?? map[Context.Other];
   }
 }

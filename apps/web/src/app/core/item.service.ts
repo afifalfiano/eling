@@ -2,6 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable, inject, signal } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
 import type { CreateItemDto, Item, UpdateItemDto } from '@eling/shared';
+import { Context, ItemType, LoopStatus } from '@eling/shared';
 
 function toItem(raw: Record<string, unknown>): Item {
   return {
@@ -34,12 +35,12 @@ export class ItemService {
   async create(dto: CreateItemDto): Promise<void> {
     const temp: Item = {
       id: `temp-${Date.now()}`,
-      type: dto.type ?? 'loop',
+      type: dto.type ?? ItemType.Loop,
       text: dto.text,
-      context: dto.context ?? 'kerja',
+      context: dto.context ?? Context.Kerja,
       createdAt: new Date(),
       updatedAt: new Date(),
-      status: dto.type !== 'note' ? 'open' : undefined,
+      status: dto.type !== ItemType.Note ? LoopStatus.Open : undefined,
     };
     this._items.update((prev) => [temp, ...prev]);
     try {

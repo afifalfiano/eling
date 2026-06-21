@@ -1,13 +1,14 @@
 import { describe, it, expect } from 'vitest';
 import { filterSearch } from './filter-search';
+import { Context, ItemType } from '../item.model';
 import type { Item } from '../item.model';
 
 function item(p: Partial<Item>): Item {
   return {
     id: p.id ?? crypto.randomUUID(),
-    type: p.type ?? 'note',
+    type: p.type ?? ItemType.Note,
     text: p.text ?? '',
-    context: p.context ?? 'kerja',
+    context: p.context ?? Context.Kerja,
     createdAt: new Date('2026-01-01'),
     updatedAt: new Date('2026-01-01'),
     nextStep: p.nextStep,

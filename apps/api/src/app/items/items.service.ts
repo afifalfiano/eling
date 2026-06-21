@@ -36,15 +36,15 @@ export class ItemsService {
   constructor(private readonly prisma: PrismaService) {}
 
   async create(dto: CreateItemDto, owner: Owner): Promise<Item> {
-    const type = dto.type ?? 'loop';
-    const context = dto.context ?? 'kerja';
+    const type = dto.type ?? ItemType.Loop;
+    const context = dto.context ?? Context.Kerja;
     const row = await this.prisma.item.create({
       data: {
         text: dto.text,
         type,
         context,
         ...(owner.userId ? { userId: owner.userId } : { sessionId: owner.sessionId }),
-        ...(type !== 'note' && { status: 'open' }),
+        ...(type !== ItemType.Note && { status: LoopStatus.Open }),
       },
     });
     return toItem(row);
@@ -68,7 +68,7 @@ export class ItemsService {
 
   async update(id: string, dto: UpdateItemDto, owner: Owner): Promise<Item> {
     const data: Record<string, unknown> = { ...dto };
-    if (dto.status === 'done') {
+    if (dto.status === LoopStatus.Done) {
       data['doneAt'] = new Date();
     } else if (dto.status !== undefined) {
       data['doneAt'] = null;

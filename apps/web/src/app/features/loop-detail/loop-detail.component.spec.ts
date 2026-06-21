@@ -5,7 +5,8 @@ import { provideRouter } from '@angular/router';
 import { ActivatedRoute } from '@angular/router';
 import { of } from 'rxjs';
 import { TranslocoTestingModule } from '@jsverse/transloco';
-import { Item } from '@eling/shared';
+import { Context, ItemType, LoopStatus } from '@eling/shared';
+import type { Item } from '@eling/shared';
 import { LoopDetailComponent } from './loop-detail.component';
 import { ItemService } from '../../core/item.service';
 
@@ -20,12 +21,12 @@ const idLang = {
 
 const mockLoop = (): Item => ({
   id: 'loop-1',
-  type: 'loop',
+  type: ItemType.Loop,
   text: 'fix bug',
-  context: 'kerja',
+  context: Context.Kerja,
   createdAt: new Date(),
   updatedAt: new Date(),
-  status: 'open',
+  status: LoopStatus.Open,
 });
 
 describe('LoopDetailComponent', () => {
@@ -70,12 +71,12 @@ describe('LoopDetailComponent', () => {
   it('calls update when mark done clicked', async () => {
     const spy = vi.spyOn(itemService, 'update').mockResolvedValue();
     fixture.nativeElement.querySelector('[data-testid="btn-done"]').click();
-    expect(spy).toHaveBeenCalledWith('loop-1', { status: 'done' });
+    expect(spy).toHaveBeenCalledWith('loop-1', { status: LoopStatus.Done });
   });
 
   it('calls update when mark blocked clicked', async () => {
     const spy = vi.spyOn(itemService, 'update').mockResolvedValue();
     fixture.nativeElement.querySelector('[data-testid="btn-blocked"]').click();
-    expect(spy).toHaveBeenCalledWith('loop-1', expect.objectContaining({ status: 'blocked' }));
+    expect(spy).toHaveBeenCalledWith('loop-1', expect.objectContaining({ status: LoopStatus.Blocked }));
   });
 });

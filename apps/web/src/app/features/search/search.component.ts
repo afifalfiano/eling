@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { TranslocoModule } from '@jsverse/transloco';
+import { ItemType } from '@eling/shared';
 import type { Item } from '@eling/shared';
 import { ItemService } from '../../core/item.service';
 import { ItemRowComponent } from '../feed/item-row.component';
@@ -38,7 +39,7 @@ export class SearchComponent {
   }
 
   protected async onOpen(item: Item): Promise<void> {
-    if (item.type === 'loop') {
+    if (item.type === ItemType.Loop) {
       await this.router.navigate(['/loop', item.id]);
     }
   }

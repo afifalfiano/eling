@@ -1,9 +1,10 @@
+import { ItemType, LoopStatus } from '../item.model';
 import type { Item } from '../item.model';
 
 function bucket(item: Item): number {
-  if (item.type === 'loop' && item.status === 'open') return 0;
-  if (item.type === 'note') return 1;
-  if (item.type === 'loop' && (item.status === 'waiting' || item.status === 'blocked')) return 2;
+  if (item.type === ItemType.Loop && item.status === LoopStatus.Open) return 0;
+  if (item.type === ItemType.Note) return 1;
+  if (item.type === ItemType.Loop && (item.status === LoopStatus.Waiting || item.status === LoopStatus.Blocked)) return 2;
   return 3;
 }
 

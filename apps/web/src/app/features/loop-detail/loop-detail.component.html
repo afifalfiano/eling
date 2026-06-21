@@ -34,34 +34,34 @@
         <button
           data-testid="btn-done"
           type="button"
-          (click)="markStatus('done')"
+          (click)="markStatus(LoopStatus.Done)"
           class="w-full py-2.5 rounded-lg border border-done text-done text-sm font-medium hover:bg-green-50"
         >{{ 'loopDetail.markDone' | transloco }}</button>
 
         <button
           data-testid="btn-blocked"
           type="button"
-          (click)="markStatus('blocked')"
+          (click)="markStatus(LoopStatus.Blocked)"
           class="w-full py-2.5 rounded-lg border border-border text-muted text-sm hover:bg-gray-50"
         >{{ 'loopDetail.blocked' | transloco }}</button>
 
         <button
           data-testid="btn-waiting"
           type="button"
-          (click)="markStatus('waiting')"
+          (click)="markStatus(LoopStatus.Waiting)"
           class="w-full py-2.5 rounded-lg border border-border text-muted text-sm hover:bg-gray-50"
         >{{ 'loopDetail.waiting' | transloco }}</button>
 
         <button
           data-testid="btn-open"
           type="button"
-          (click)="markStatus('open')"
+          (click)="markStatus(LoopStatus.Open)"
           class="w-full py-2.5 rounded-lg border border-border text-muted text-sm hover:bg-gray-50"
         >{{ 'loopDetail.reopen' | transloco }}</button>
       </div>
     </div>
 
-    @if (loop.status === 'blocked' || loop.status === 'waiting') {
+    @if (loop.status === LoopStatus.Blocked || loop.status === LoopStatus.Waiting) {
       <div class="space-y-1">
         <label class="text-xs text-muted uppercase tracking-wide">{{ 'loopDetail.blockedReasonLabel' | transloco }}</label>
         <input

@@ -6,12 +6,12 @@
           type="button"
           (click)="context.set(ctx)"
           class="text-xs px-3 py-1.5 min-h-9 rounded-full border transition-all flex items-center"
-          [class.border-ctx-kerja]="ctx === 'kerja' && context() === ctx"
-          [class.text-ctx-kerja]="ctx === 'kerja' && context() === ctx"
-          [class.border-ctx-pribadi]="ctx === 'pribadi' && context() === ctx"
-          [class.text-ctx-pribadi]="ctx === 'pribadi' && context() === ctx"
-          [class.border-ctx-other]="ctx === 'other' && context() === ctx"
-          [class.text-ctx-other]="ctx === 'other' && context() === ctx"
+          [class.border-ctx-kerja]="ctx === Context.Kerja && context() === ctx"
+          [class.text-ctx-kerja]="ctx === Context.Kerja && context() === ctx"
+          [class.border-ctx-pribadi]="ctx === Context.Pribadi && context() === ctx"
+          [class.text-ctx-pribadi]="ctx === Context.Pribadi && context() === ctx"
+          [class.border-ctx-other]="ctx === Context.Other && context() === ctx"
+          [class.text-ctx-other]="ctx === Context.Other && context() === ctx"
           [class.border-border]="context() !== ctx"
           [class.text-muted]="context() !== ctx"
           [class.scale-105]="context() === ctx"
@@ -21,11 +21,11 @@
         type="button"
         (click)="toggleType()"
         class="ml-auto text-xs px-3 py-1.5 min-h-9 rounded-full border transition-all flex items-center"
-        [class.border-loop]="type() === 'loop'"
-        [class.text-loop]="type() === 'loop'"
-        [class.border-muted]="type() === 'note'"
-        [class.text-muted]="type() === 'note'"
-      >{{ (type() === 'loop' ? 'capture.loopLabel' : 'capture.noteLabel') | transloco }}</button>
+        [class.border-loop]="type() === ItemType.Loop"
+        [class.text-loop]="type() === ItemType.Loop"
+        [class.border-muted]="type() === ItemType.Note"
+        [class.text-muted]="type() === ItemType.Note"
+      >{{ (type() === ItemType.Loop ? 'capture.loopLabel' : 'capture.noteLabel') | transloco }}</button>
     </div>
 
     <form (ngSubmit)="onSubmit()" class="flex gap-2">

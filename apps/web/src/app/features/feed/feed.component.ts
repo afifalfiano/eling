@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, OnInit, computed, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { TranslocoModule } from '@jsverse/transloco';
-import { orderFeed } from '@eling/shared';
+import { ItemType, LoopStatus, orderFeed } from '@eling/shared';
 import type { Item } from '@eling/shared';
 import { ItemService } from '../../core/item.service';
 import { ToastService } from '../../core/toast.service';
@@ -24,7 +24,7 @@ export class FeedComponent implements OnInit {
   protected readonly orderedItems = computed(() => orderFeed(this.itemService.items()));
 
   protected get openCount(): number {
-    return this.itemService.items().filter((i) => i.type === 'loop' && i.status === 'open').length;
+    return this.itemService.items().filter((i) => i.type === ItemType.Loop && i.status === LoopStatus.Open).length;
   }
 
   async ngOnInit(): Promise<void> {
@@ -37,14 +37,14 @@ export class FeedComponent implements OnInit {
   }
 
   protected async onOpen(item: Item): Promise<void> {
-    if (item.type === 'loop') {
+    if (item.type === ItemType.Loop) {
       await this.router.navigate(['/loop', item.id]);
     }
   }
 
   protected async onToggleDone(item: Item): Promise<void> {
-    const newStatus = item.status === 'done' ? 'open' : 'done';
+    const newStatus = item.status === LoopStatus.Done ? LoopStatus.Open : LoopStatus.Done;
     await this.itemService.update(item.id, { status: newStatus });
-    this.toast.show(newStatus === 'done' ? '✓ Selesai' : '↻ Dibuka kembali');
+    this.toast.show(newStatus === LoopStatus.Done ? '✓ Selesai' : '↻ Dibuka kembali');
   }
 }

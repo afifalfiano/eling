@@ -2,7 +2,8 @@ import { ChangeDetectionStrategy, Component, OnInit, computed, inject, signal } 
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { TranslocoModule } from '@jsverse/transloco';
-import type { Item, LoopStatus, UpdateItemDto } from '@eling/shared';
+import { LoopStatus } from '@eling/shared';
+import type { Item, UpdateItemDto } from '@eling/shared';
 import { ItemService } from '../../core/item.service';
 
 @Component({
@@ -16,6 +17,8 @@ export class LoopDetailComponent implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly itemService = inject(ItemService);
+
+  protected readonly LoopStatus = LoopStatus;
 
   private readonly id = signal('');
   protected readonly item = computed<Item | undefined>(() =>
@@ -34,7 +37,7 @@ export class LoopDetailComponent implements OnInit {
 
   protected async markStatus(status: LoopStatus): Promise<void> {
     const dto: UpdateItemDto = { status };
-    if (status === 'blocked') (dto as Record<string, unknown>)['blockedReason'] = this.blockedReason();
+    if (status === LoopStatus.Blocked) (dto as Record<string, unknown>)['blockedReason'] = this.blockedReason();
     await this.itemService.update(this.id(), dto);
     await this.router.navigate(['/']);
   }

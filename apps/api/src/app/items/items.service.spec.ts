@@ -1,5 +1,5 @@
 import { Test } from '@nestjs/testing';
-import { CreateItemDto, UpdateItemDto } from '@eling/shared';
+import { Context, CreateItemDto, ItemType, LoopStatus, UpdateItemDto } from '@eling/shared';
 import { ItemsService } from './items.service';
 import { PrismaService } from '../prisma/prisma.service';
 
@@ -17,10 +17,10 @@ const baseRow = {
   id: 'uuid-1',
   userId: null,
   sessionId: 'sid-1',
-  type: 'loop',
+  type: ItemType.Loop,
   text: 'beli susu',
-  context: 'pribadi',
-  status: 'open',
+  context: Context.Pribadi,
+  status: LoopStatus.Open,
   createdAt: now,
   updatedAt: now,
   nextStep: null,
@@ -48,7 +48,7 @@ describe('ItemsService', () => {
 
   describe('create()', () => {
     it('stores item with sessionId for anon owner', async () => {
-      const dto: CreateItemDto = { text: 'beli susu', type: 'loop', context: 'pribadi' };
+      const dto: CreateItemDto = { text: 'beli susu', type: ItemType.Loop, context: Context.Pribadi };
       mockPrisma.item.create.mockResolvedValue(baseRow);
 
       await service.create(dto, anonOwner);
@@ -71,19 +71,19 @@ describe('ItemsService', () => {
 
     it('defaults type=loop and context=kerja', async () => {
       const dto: CreateItemDto = { text: 'review PR' };
-      mockPrisma.item.create.mockResolvedValue({ ...baseRow, text: 'review PR', context: 'kerja' });
+      mockPrisma.item.create.mockResolvedValue({ ...baseRow, text: 'review PR', context: Context.Kerja });
 
       await service.create(dto, anonOwner);
 
       const call = mockPrisma.item.create.mock.calls[0][0];
-      expect(call.data.type).toBe('loop');
-      expect(call.data.context).toBe('kerja');
-      expect(call.data.status).toBe('open');
+      expect(call.data.type).toBe(ItemType.Loop);
+      expect(call.data.context).toBe(Context.Kerja);
+      expect(call.data.status).toBe(LoopStatus.Open);
     });
 
     it('does not set status for notes', async () => {
-      const dto: CreateItemDto = { text: 'root cause', type: 'note' };
-      mockPrisma.item.create.mockResolvedValue({ ...baseRow, type: 'note', status: null });
+      const dto: CreateItemDto = { text: 'root cause', type: ItemType.Note };
+      mockPrisma.item.create.mockResolvedValue({ ...baseRow, type: ItemType.Note, status: null });
 
       await service.create(dto, anonOwner);
 
@@ -116,11 +116,11 @@ describe('ItemsService', () => {
     it('applies additional filters alongside ownership', async () => {
       mockPrisma.item.findMany.mockResolvedValue([]);
 
-      await service.findAll({ status: 'open', type: 'loop' }, anonOwner);
+      await service.findAll({ status: LoopStatus.Open, type: ItemType.Loop }, anonOwner);
 
       expect(mockPrisma.item.findMany).toHaveBeenCalledWith(
         expect.objectContaining({
-          where: { sessionId: 'sid-1', status: 'open', type: 'loop' },
+          where: { sessionId: 'sid-1', status: LoopStatus.Open, type: ItemType.Loop },
         }),
       );
     });
@@ -128,8 +128,8 @@ describe('ItemsService', () => {
 
   describe('update()', () => {
     it('sets doneAt when status becomes done', async () => {
-      const dto: UpdateItemDto = { status: 'done' };
-      mockPrisma.item.update.mockResolvedValue({ ...baseRow, status: 'done', doneAt: now });
+      const dto: UpdateItemDto = { status: LoopStatus.Done };
+      mockPrisma.item.update.mockResolvedValue({ ...baseRow, status: LoopStatus.Done, doneAt: now });
 
       await service.update('uuid-1', dto, anonOwner);
 
@@ -139,8 +139,8 @@ describe('ItemsService', () => {
     });
 
     it('clears doneAt when status changes away from done', async () => {
-      const dto: UpdateItemDto = { status: 'open' };
-      mockPrisma.item.update.mockResolvedValue({ ...baseRow, status: 'open', doneAt: null });
+      const dto: UpdateItemDto = { status: LoopStatus.Open };
+      mockPrisma.item.update.mockResolvedValue({ ...baseRow, status: LoopStatus.Open, doneAt: null });
 
       await service.update('uuid-1', dto, anonOwner);
 

@@ -1,6 +1,20 @@
-export type ItemType = 'note' | 'loop';
-export type Context = 'kerja' | 'pribadi' | 'other';
-export type LoopStatus = 'open' | 'blocked' | 'waiting' | 'done';
+export enum ItemType {
+  Note = 'note',
+  Loop = 'loop',
+}
+
+export enum Context {
+  Kerja = 'kerja',
+  Pribadi = 'pribadi',
+  Other = 'other',
+}
+
+export enum LoopStatus {
+  Open = 'open',
+  Blocked = 'blocked',
+  Waiting = 'waiting',
+  Done = 'done',
+}
 
 export interface Item {
   id: string;
