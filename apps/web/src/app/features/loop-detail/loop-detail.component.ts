@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, OnInit, computed, inject, signal } 
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { TranslocoModule } from '@jsverse/transloco';
-import { ItemType, LoopStatus } from '@eling/shared';
+import { Context, ItemType, LoopStatus } from '@eling/shared';
 import type { Item, ItemHistory, UpdateItemDto } from '@eling/shared';
 import { ItemService } from '../../core/item.service';
 import { ToastService } from '../../core/toast.service';
@@ -22,6 +22,8 @@ export class LoopDetailComponent implements OnInit {
 
   protected readonly ItemType = ItemType;
   protected readonly LoopStatus = LoopStatus;
+  protected readonly Context = Context;
+  protected readonly contexts = Object.values(Context);
 
   private readonly id = signal('');
   private readonly loadedItem = signal<Item | undefined>(undefined);
@@ -32,6 +34,7 @@ export class LoopDetailComponent implements OnInit {
   protected readonly nextStep = signal('');
   protected readonly blockedReason = signal('');
   protected readonly editText = signal('');
+  protected readonly selectedContext = signal<Context>(Context.Kerja);
   protected readonly selectedStatus = signal<LoopStatus>(LoopStatus.Open);
   protected readonly history = signal<ItemHistory[]>([]);
   private async refreshHistory(): Promise<void> {
@@ -48,6 +51,7 @@ export class LoopDetailComponent implements OnInit {
         this.editText.set(local.text ?? '');
         this.nextStep.set(local.nextStep ?? '');
         this.blockedReason.set(local.blockedReason ?? '');
+        this.selectedContext.set(local.context);
         if (local.type === ItemType.Loop) this.selectedStatus.set(local.status!);
       } else {
         try {
@@ -56,6 +60,7 @@ export class LoopDetailComponent implements OnInit {
           this.editText.set(fetched.text ?? '');
           this.nextStep.set(fetched.nextStep ?? '');
           this.blockedReason.set(fetched.blockedReason ?? '');
+          this.selectedContext.set(fetched.context);
           if (fetched.type === ItemType.Loop) this.selectedStatus.set(fetched.status!);
         } catch {
           /* stays undefined → not-found */
@@ -80,6 +85,9 @@ export class LoopDetailComponent implements OnInit {
 
     const t = this.editText().trim();
     if (t && t !== item.text) dto['text'] = t;
+
+    const ctx = this.selectedContext();
+    if (ctx !== item.context) dto['context'] = ctx;
 
     if (item.type === ItemType.Loop) {
       const ns = this.nextStep();

@@ -51,6 +51,7 @@
   },
   "loopDetail": {
     "backAriaLabel": "Kembali",
+    "contextLabel": "Konteks",
     "nextStepLabel": "Next step",
     "nextStepPlaceholder": "Langkah berikutnya...",
     "save": "Simpan",

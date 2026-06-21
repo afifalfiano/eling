@@ -19,6 +19,30 @@
     }
   </div>
 
+  @if (item(); as it) {
+    <div class="space-y-2">
+      <p class="text-xs text-muted uppercase tracking-wide">{{ 'loopDetail.contextLabel' | transloco }}</p>
+      <div class="flex gap-2">
+        @for (ctx of contexts; track ctx) {
+          <button
+            type="button"
+            (click)="selectedContext.set(ctx)"
+            class="text-xs px-3 py-1.5 min-h-9 rounded-full border transition-all flex items-center"
+            [class.border-ctx-kerja]="ctx === Context.Kerja && selectedContext() === ctx"
+            [class.text-ctx-kerja]="ctx === Context.Kerja && selectedContext() === ctx"
+            [class.border-ctx-pribadi]="ctx === Context.Pribadi && selectedContext() === ctx"
+            [class.text-ctx-pribadi]="ctx === Context.Pribadi && selectedContext() === ctx"
+            [class.border-ctx-other]="ctx === Context.Other && selectedContext() === ctx"
+            [class.text-ctx-other]="ctx === Context.Other && selectedContext() === ctx"
+            [class.border-border]="selectedContext() !== ctx"
+            [class.text-muted]="selectedContext() !== ctx"
+            [class.scale-105]="selectedContext() === ctx"
+          >{{ ('context.' + ctx) | transloco }}</button>
+        }
+      </div>
+    </div>
+  }
+
   @if (item(); as loop) {
     @if (loop.type === ItemType.Loop) {
       <div class="space-y-1">
@@ -68,7 +92,8 @@
             data-testid="btn-open"
             type="button"
             (click)="selectStatus(LoopStatus.Open)"
-            [class.bg-border/20]="selectedStatus() === LoopStatus.Open"
+            [class.bg-gray-100]="selectedStatus() === LoopStatus.Open"
+            [class.border-gray-400]="selectedStatus() === LoopStatus.Open"
             [class.text-text]="selectedStatus() === LoopStatus.Open"
             [class.font-medium]="selectedStatus() === LoopStatus.Open"
             class="w-full py-2.5 min-h-[48px] rounded-lg border border-border text-muted text-sm hover:bg-gray-50 active:scale-[0.98] transition-all"

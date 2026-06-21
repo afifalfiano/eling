@@ -13,7 +13,7 @@ import { ItemService } from '../../core/item.service';
 const idLang = {
   loopDetail: {
     backAriaLabel: 'Kembali', nextStepLabel: 'Next step', nextStepPlaceholder: 'Langkah berikutnya...',
-    save: 'Simpan', statusLabel: 'Status', markDone: '\u2713 Tandai selesai', blocked: 'Blocked / menunggu',
+    save: 'Simpan', contextLabel: 'Konteks', statusLabel: 'Status', markDone: '\u2713 Tandai selesai', blocked: 'Blocked / menunggu',
     waiting: 'Menunggu diskusi', reopen: 'Buka kembali', blockedReasonLabel: 'Alasan blocked',
     blockedReasonPlaceholder: 'Kenapa blocked?', notFound: 'Item tidak ditemukan.',
     delete: 'Hapus',

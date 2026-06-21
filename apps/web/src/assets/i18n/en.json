@@ -51,6 +51,7 @@
   },
   "loopDetail": {
     "backAriaLabel": "Back",
+    "contextLabel": "Context",
     "nextStepLabel": "Next step",
     "nextStepPlaceholder": "Next action...",
     "save": "Save",
