@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import {
   Context,
   CreateItemDto,
@@ -78,13 +78,7 @@ export class ItemsService {
     const existing = await this.prisma.item.findFirst({
       where: { id, ...ownerWhere(owner) },
     });
-    if (!existing) {
-      const row = await this.prisma.item.update({
-        where: { id, ...ownerWhere(owner) },
-        data: dto as Record<string, unknown>,
-      });
-      return toItem(row);
-    }
+    if (!existing) throw new NotFoundException();
 
     const data: Record<string, unknown> = { ...dto };
     if (dto.status === LoopStatus.Done) {

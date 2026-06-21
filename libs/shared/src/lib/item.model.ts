@@ -52,8 +52,3 @@ export interface ItemHistory {
   toValue: string | null;
   createdAt: Date;
 }
-
-export interface RegisterDto {
-  email: string;
-  password: string;
-}

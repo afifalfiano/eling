@@ -1,7 +1,5 @@
 import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { ThrottlerModule } from '@nestjs/throttler';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
 import { HealthController } from './health/health.controller';
 import { AuthModule } from './auth/auth.module';
 import { ItemsModule } from './items/items.module';
@@ -15,8 +13,7 @@ import { SessionMiddleware } from './auth/session.middleware';
     ItemsModule,
     AuthModule,
   ],
-  controllers: [AppController, HealthController],
-  providers: [AppService],
+  controllers: [HealthController],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {

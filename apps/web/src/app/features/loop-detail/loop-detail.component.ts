@@ -38,11 +38,6 @@ export class LoopDetailComponent implements OnInit {
   protected readonly selectedContext = signal<Context>(Context.Kerja);
   protected readonly selectedStatus = signal<LoopStatus>(LoopStatus.Open);
   protected readonly history = signal<ItemHistory[]>([]);
-  private async refreshHistory(): Promise<void> {
-    try {
-      this.history.set(await this.itemService.getHistory(this.id()));
-    } catch { /* ignore */ }
-  }
 
   ngOnInit(): void {
     this.route.params.subscribe(async (p) => {
@@ -110,7 +105,6 @@ export class LoopDetailComponent implements OnInit {
     try {
       await this.itemService.update(this.id(), dto as UpdateItemDto);
       this.toast.show(this.transloco.translate('loopDetail.saved'));
-      if (item.type === ItemType.Loop) await this.refreshHistory();
       await this.router.navigate(['/']);
     } catch {
       this.toast.show(this.transloco.translate('loopDetail.saveError'), 'error');
