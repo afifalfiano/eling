@@ -4,9 +4,19 @@ import { provideHttpClientTesting, HttpTestingController } from '@angular/common
 import { provideRouter } from '@angular/router';
 import { ActivatedRoute } from '@angular/router';
 import { of } from 'rxjs';
+import { TranslocoTestingModule } from '@jsverse/transloco';
 import { Item } from '@eling/shared';
 import { LoopDetailComponent } from './loop-detail.component';
 import { ItemService } from '../../core/item.service';
+
+const idLang = {
+  loopDetail: {
+    backAriaLabel: 'Kembali', nextStepLabel: 'Next step', nextStepPlaceholder: 'Langkah berikutnya...',
+    save: 'Simpan', statusLabel: 'Status', markDone: '✓ Tandai selesai', blocked: 'Blocked / menunggu',
+    waiting: 'Menunggu diskusi', reopen: 'Buka kembali', blockedReasonLabel: 'Alasan blocked',
+    blockedReasonPlaceholder: 'Kenapa blocked?', notFound: 'Loop tidak ditemukan.',
+  },
+};
 
 const mockLoop = (): Item => ({
   id: 'loop-1',
@@ -25,7 +35,14 @@ describe('LoopDetailComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [LoopDetailComponent],
+      imports: [
+        LoopDetailComponent,
+        TranslocoTestingModule.forRoot({
+          langs: { id: idLang },
+          translocoConfig: { defaultLang: 'id' },
+          preloadLangs: true,
+        }),
+      ],
       providers: [
         ItemService,
         provideHttpClient(),
@@ -39,7 +56,6 @@ describe('LoopDetailComponent', () => {
     }).compileComponents();
     itemService = TestBed.inject(ItemService);
     http = TestBed.inject(HttpTestingController);
-    // seed item into service signal
     (itemService as any)['_items'].set([mockLoop()]);
     fixture = TestBed.createComponent(LoopDetailComponent);
     await fixture.whenStable();

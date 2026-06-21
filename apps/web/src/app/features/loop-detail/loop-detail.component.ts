@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, OnInit, computed, inject, signal } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
+import { TranslocoModule } from '@jsverse/transloco';
 import type { Item, LoopStatus, UpdateItemDto } from '@eling/shared';
 import { ItemService } from '../../core/item.service';
 
@@ -8,7 +9,7 @@ import { ItemService } from '../../core/item.service';
   selector: 'app-loop-detail',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [FormsModule],
+  imports: [FormsModule, TranslocoModule],
   templateUrl: './loop-detail.component.html',
 })
 export class LoopDetailComponent implements OnInit {

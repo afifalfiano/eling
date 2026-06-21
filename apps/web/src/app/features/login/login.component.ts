@@ -1,13 +1,14 @@
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
+import { TranslocoModule } from '@jsverse/transloco';
 import { AuthService } from '../../core/auth.service';
 
 @Component({
   selector: 'app-login',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [FormsModule],
+  imports: [FormsModule, TranslocoModule],
   templateUrl: './login.component.html',
 })
 export class LoginComponent {
@@ -26,7 +27,7 @@ export class LoginComponent {
       await this.auth.login(this.username(), this.password());
       await this.router.navigate(['/']);
     } catch {
-      this.error.set('Username atau password salah.');
+      this.error.set('login.error');
     } finally {
       this.loading.set(false);
     }

@@ -1,8 +1,14 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
+import { TranslocoTestingModule } from '@jsverse/transloco';
 import { CaptureBarComponent } from './capture-bar.component';
 import { ItemService } from '../../core/item.service';
+
+const idLang = {
+  capture: { placeholder: 'Apa yang ada di kepalamu?', captureAriaLabel: 'Tangkap', loopLabel: '○ loop', noteLabel: '· note' },
+  context: { kerja: 'kerja', pribadi: 'pribadi', other: 'other' },
+};
 
 describe('CaptureBarComponent', () => {
   let fixture: ComponentFixture<CaptureBarComponent>;
@@ -10,7 +16,14 @@ describe('CaptureBarComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [CaptureBarComponent],
+      imports: [
+        CaptureBarComponent,
+        TranslocoTestingModule.forRoot({
+          langs: { id: idLang },
+          translocoConfig: { defaultLang: 'id' },
+          preloadLangs: true,
+        }),
+      ],
       providers: [ItemService, provideHttpClient(), provideHttpClientTesting()],
     }).compileComponents();
     fixture = TestBed.createComponent(CaptureBarComponent);
@@ -24,7 +37,6 @@ describe('CaptureBarComponent', () => {
 
   it('calls itemService.create when text is set and onSubmit called', async () => {
     const spy = vi.spyOn(itemService, 'create').mockResolvedValue();
-    // set signal directly (component API)
     fixture.componentInstance['text'].set('hello world');
     fixture.detectChanges();
     await (fixture.componentInstance as any).onSubmit();

@@ -2,8 +2,13 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting, HttpTestingController } from '@angular/common/http/testing';
 import { provideRouter } from '@angular/router';
+import { TranslocoTestingModule } from '@jsverse/transloco';
 import { SearchComponent } from './search.component';
 import { ItemService } from '../../core/item.service';
+
+const idLang = {
+  search: { placeholder: 'Cari di semua riwayat...', noResults: 'Tidak ada hasil untuk "{{ query }}"' },
+};
 
 describe('SearchComponent', () => {
   let fixture: ComponentFixture<SearchComponent>;
@@ -11,7 +16,14 @@ describe('SearchComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [SearchComponent],
+      imports: [
+        SearchComponent,
+        TranslocoTestingModule.forRoot({
+          langs: { id: idLang },
+          translocoConfig: { defaultLang: 'id' },
+          preloadLangs: true,
+        }),
+      ],
       providers: [
         ItemService,
         provideHttpClient(),
@@ -33,7 +45,6 @@ describe('SearchComponent', () => {
   it('calls search API after debounce', async () => {
     const itemService = TestBed.inject(ItemService);
     const spy = vi.spyOn(itemService, 'search').mockResolvedValue([]);
-    // directly call onInput to bypass debounce in unit test
     (fixture.componentInstance as any).onInput('test');
     await new Promise((r) => setTimeout(r, 350));
     expect(spy).toHaveBeenCalledWith('test');
@@ -46,6 +57,6 @@ describe('SearchComponent', () => {
     await new Promise((r) => setTimeout(r, 350));
     await fixture.whenStable();
     fixture.detectChanges();
-    expect(fixture.nativeElement.textContent).toContain('Tidak ada hasil');
+    expect(fixture.nativeElement.querySelector('[data-testid="search-empty"]')).toBeTruthy();
   });
 });

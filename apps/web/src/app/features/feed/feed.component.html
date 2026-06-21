@@ -1,17 +1,17 @@
 @if (loading()) {
   <div class="flex justify-center py-12">
-    <span class="text-sm text-muted">Memuat...</span>
+    <span class="text-sm text-muted">{{ 'feed.loading' | transloco }}</span>
   </div>
 } @else {
   <div class="space-y-0 divide-y divide-border">
     @if (orderedItems().length === 0) {
       <div class="py-16 text-center">
-        <p class="text-muted text-sm">Kosong — kepalamu lega.</p>
+        <p class="text-muted text-sm">{{ 'feed.empty' | transloco }}</p>
       </div>
     } @else {
       <div class="py-2 px-1">
         <p class="text-xs text-faint">
-          {{ openCount }} loop terbuka
+          {{ 'feed.openCount' | transloco: { count: openCount } }}
         </p>
       </div>
 

@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
+import { TranslocoModule } from '@jsverse/transloco';
 import type { Item } from '@eling/shared';
 import { ItemService } from '../../core/item.service';
 import { ItemRowComponent } from '../feed/item-row.component';
@@ -8,7 +9,7 @@ import { ItemRowComponent } from '../feed/item-row.component';
   selector: 'app-search',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [ItemRowComponent],
+  imports: [ItemRowComponent, TranslocoModule],
   templateUrl: './search.component.html',
 })
 export class SearchComponent {

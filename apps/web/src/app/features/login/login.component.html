@@ -1,14 +1,14 @@
 <div class="min-h-dvh bg-bg flex items-center justify-center px-4">
   <div class="w-full max-w-sm bg-surface rounded-lg border border-border p-8 space-y-6">
-    <h1 class="text-xl font-medium text-text">Eling</h1>
+    <h1 class="text-xl font-medium text-text">{{ 'login.title' | transloco }}</h1>
 
     @if (error()) {
-      <p class="text-sm text-loop">{{ error() }}</p>
+      <p class="text-sm text-loop">{{ error() | transloco }}</p>
     }
 
     <form (ngSubmit)="submit()" class="space-y-4">
       <div class="space-y-1">
-        <label class="text-sm text-muted" for="username">Username</label>
+        <label class="text-sm text-muted" for="username">{{ 'login.usernameLabel' | transloco }}</label>
         <input
           id="username"
           type="text"
@@ -21,7 +21,7 @@
       </div>
 
       <div class="space-y-1">
-        <label class="text-sm text-muted" for="password">Password</label>
+        <label class="text-sm text-muted" for="password">{{ 'login.passwordLabel' | transloco }}</label>
         <input
           id="password"
           type="password"
@@ -38,7 +38,7 @@
         [disabled]="loading()"
         class="w-full bg-loop text-white rounded py-2 text-sm font-medium hover:opacity-90 disabled:opacity-50"
       >
-        {{ loading() ? 'Masuk...' : 'Masuk' }}
+        {{ (loading() ? 'login.loading' : 'login.submit') | transloco }}
       </button>
     </form>
   </div>

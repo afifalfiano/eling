@@ -4,13 +4,15 @@
     type="search"
     [value]="query()"
     (input)="onInput($any($event.target).value)"
-    placeholder="Cari di semua riwayat..."
+    [placeholder]="'search.placeholder' | transloco"
     autocomplete="off"
     class="w-full border border-border rounded-lg px-4 py-3 text-sm text-text bg-surface placeholder:text-faint focus:outline-none focus:ring-1 focus:ring-loop"
   />
 
   @if (searched() && results().length === 0) {
-    <p class="text-center text-sm text-muted py-8">Tidak ada hasil untuk "{{ query() }}"</p>
+    <p data-testid="search-empty" class="text-center text-sm text-muted py-8">
+      {{ 'search.noResults' | transloco: { query: query() } }}
+    </p>
   }
 
   @if (results().length > 0) {

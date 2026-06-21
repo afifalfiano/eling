@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, OnInit, computed, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
+import { TranslocoModule } from '@jsverse/transloco';
 import { orderFeed } from '@eling/shared';
 import type { Item } from '@eling/shared';
 import { ItemService } from '../../core/item.service';
@@ -10,7 +11,7 @@ import { CaptureBarComponent } from '../capture/capture-bar.component';
   selector: 'app-feed',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [ItemRowComponent, CaptureBarComponent],
+  imports: [ItemRowComponent, CaptureBarComponent, TranslocoModule],
   templateUrl: './feed.component.html',
 })
 export class FeedComponent implements OnInit {

@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
+import { TranslocoModule } from '@jsverse/transloco';
 import type { Context, ItemType } from '@eling/shared';
 import { ItemService } from '../../core/item.service';
 
@@ -6,6 +7,7 @@ import { ItemService } from '../../core/item.service';
   selector: 'app-capture-bar',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [TranslocoModule],
   templateUrl: './capture-bar.component.html',
 })
 export class CaptureBarComponent {
