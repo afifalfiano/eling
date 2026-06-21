@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import * as argon2 from 'argon2';
+import * as bcrypt from 'bcryptjs';
 
 @Injectable()
 export class AuthService {
@@ -11,12 +11,13 @@ export class AuthService {
     password: string,
   ): Promise<{ access_token: string } | null> {
     const expectedUsername = process.env['AUTH_USERNAME'];
-    const passwordHash = process.env['AUTH_PASSWORD_HASH'];
+    const hashB64 = process.env['AUTH_PASSWORD_HASH'];
 
-    if (!expectedUsername || !passwordHash) return null;
+    if (!expectedUsername || !hashB64) return null;
     if (username !== expectedUsername) return null;
 
-    const valid = await argon2.verify(passwordHash, password);
+    const hash = Buffer.from(hashB64, 'base64').toString('utf-8');
+    const valid = await bcrypt.compare(password, hash);
     if (!valid) return null;
 
     const token = await this.jwt.signAsync({ sub: username });
