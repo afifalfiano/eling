@@ -1,0 +1,45 @@
+<div class="min-h-dvh bg-bg flex items-center justify-center px-4">
+  <div class="w-full max-w-sm bg-surface rounded-lg border border-border p-8 space-y-6">
+    <h1 class="text-xl font-medium text-text">Eling</h1>
+
+    @if (error()) {
+      <p class="text-sm text-loop">{{ error() }}</p>
+    }
+
+    <form (ngSubmit)="submit()" class="space-y-4">
+      <div class="space-y-1">
+        <label class="text-sm text-muted" for="username">Username</label>
+        <input
+          id="username"
+          type="text"
+          [ngModel]="username()"
+          (ngModelChange)="username.set($event)"
+          name="username"
+          autocomplete="username"
+          class="w-full border border-border rounded px-3 py-2 text-text bg-surface text-sm focus:outline-none focus:ring-1 focus:ring-loop"
+        />
+      </div>
+
+      <div class="space-y-1">
+        <label class="text-sm text-muted" for="password">Password</label>
+        <input
+          id="password"
+          type="password"
+          [ngModel]="password()"
+          (ngModelChange)="password.set($event)"
+          name="password"
+          autocomplete="current-password"
+          class="w-full border border-border rounded px-3 py-2 text-text bg-surface text-sm focus:outline-none focus:ring-1 focus:ring-loop"
+        />
+      </div>
+
+      <button
+        type="submit"
+        [disabled]="loading()"
+        class="w-full bg-loop text-white rounded py-2 text-sm font-medium hover:opacity-90 disabled:opacity-50"
+      >
+        {{ loading() ? 'Masuk...' : 'Masuk' }}
+      </button>
+    </form>
+  </div>
+</div>
