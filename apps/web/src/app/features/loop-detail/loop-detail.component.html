@@ -27,7 +27,7 @@
           <button
             type="button"
             (click)="selectedContext.set(ctx)"
-            class="text-xs px-3 py-1.5 min-h-12 rounded-full border transition-all flex items-center"
+            class="text-xs px-3 py-1.5 min-h-9 rounded-full border transition-all flex items-center"
             [class.border-ctx-kerja]="ctx === Context.Kerja && selectedContext() === ctx"
             [class.text-ctx-kerja]="ctx === Context.Kerja && selectedContext() === ctx"
             [class.border-ctx-pribadi]="ctx === Context.Pribadi && selectedContext() === ctx"

@@ -60,7 +60,7 @@ const THEME_KEY = 'eling-theme';
       <div class="fixed top-4 right-4 z-50 flex flex-col gap-2 items-end pointer-events-none">
         @for (msg of toast.messages(); track msg.id) {
           <div
-            class="animate-slide-in pointer-events-auto bg-surface text-text border border-border text-sm px-4 py-3 rounded-lg shadow-lg min-h-[44px] flex items-center"
+            class="animate-slide-in pointer-events-auto bg-text text-bg border border-border text-sm px-4 py-3 rounded-lg shadow-lg min-h-[44px] flex items-center"
             [class.bg-done]="msg.type === 'success'"
             [class.text-white]="msg.type === 'success'"
             [class.bg-loop]="msg.type === 'info'"
@@ -96,14 +96,11 @@ export class App implements OnInit {
     if (theme === 'dark') {
       this.isDark.set(true);
       document.documentElement.classList.add('dark');
-      document.documentElement.classList.remove('light');
     } else if (theme === 'light') {
-      document.documentElement.classList.add('light');
       document.documentElement.classList.remove('dark');
     } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
       this.isDark.set(true);
       document.documentElement.classList.add('dark');
-      document.documentElement.classList.remove('light');
     }
   }
 
@@ -116,15 +113,8 @@ export class App implements OnInit {
 
   protected toggleTheme(): void {
     this.isDark.update((v) => !v);
-    const next = this.isDark();
-    if (next) {
-      document.documentElement.classList.add('dark');
-      document.documentElement.classList.remove('light');
-    } else {
-      document.documentElement.classList.add('light');
-      document.documentElement.classList.remove('dark');
-    }
-    localStorage.setItem(THEME_KEY, next ? 'dark' : 'light');
+    document.documentElement.classList.toggle('dark', this.isDark());
+    localStorage.setItem(THEME_KEY, this.isDark() ? 'dark' : 'light');
   }
 
   protected async onExport(): Promise<void> {

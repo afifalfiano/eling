@@ -12,25 +12,8 @@
   --color-ctx-kerja: #378ADD;
   --color-ctx-pribadi: #BA7517;
   --color-ctx-other: #888780;
-
   --radius-DEFAULT: 8px;
   --radius-lg: 12px;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root:not(.light) {
-    --color-bg: #161618;
-    --color-surface: #1F1F22;
-    --color-text: #ECEAE4;
-    --color-muted: #A39E94;
-    --color-border: #2E2E31;
-    --color-loop: #E8794F;
-    --color-done: #97C459;
-    --color-ctx-kerja: #5BA3E6;
-    --color-ctx-pribadi: #D4943A;
-    --color-ctx-other: #A3A099;
-    --color-faint: #6B6760;
-  }
 }
 
 .dark {
@@ -40,7 +23,7 @@
   --color-muted: #A39E94;
   --color-border: #2E2E31;
   --color-loop: #E8794F;
-  --color-done: #97C459;
+  --color-done: #3B6D11;
   --color-ctx-kerja: #5BA3E6;
   --color-ctx-pribadi: #D4943A;
   --color-ctx-other: #A3A099;

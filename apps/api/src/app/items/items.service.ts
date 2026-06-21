@@ -97,7 +97,7 @@ export class ItemsService {
     const trackedFields = ['text', 'status', 'nextStep', 'blockedReason'];
     for (const key of trackedFields) {
       if (key in dto && dto[key as keyof UpdateItemDto] !== undefined) {
-        const from = existing[key] ?? null;
+        const from = ((existing as Record<string, unknown>)[key] as string | undefined) ?? null;
         const to = String(dto[key as keyof UpdateItemDto]) ?? null;
         if (from !== to) {
           changes.push({ field: key, from, to });
