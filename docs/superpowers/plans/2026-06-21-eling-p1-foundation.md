@@ -34,46 +34,55 @@
 
 ---
 
-## Task 1: Create the Nx workspace
+## Task 1: Initialize Nx in the existing repo
+
+**Important:** `eling/` is ALREADY a git repo containing `docs/` + `.gitignore`. Do NOT
+delete it and do NOT run `create-nx-workspace` (it refuses a non-empty target and would
+clobber the docs). Instead, add Nx to the existing folder with `nx init`.
 
 **Files:**
-- Create: `eling/` workspace (generated)
+- Create: `eling/package.json`, `eling/nx.json`, `eling/tsconfig.base.json`
 
-- [ ] **Step 1: Remove the empty placeholder dir so the generator can create it**
-
-The `eling/` subdir exists but is empty. `create-nx-workspace` refuses a pre-existing target.
-
-Run (from `eling-project/`):
-```bash
-rtk rmdir eling
-```
-Expected: succeeds silently (dir is empty). If it errors that the dir is non-empty, STOP and report — something unexpected is in it.
-
-- [ ] **Step 2: Generate the workspace (TypeScript preset, npm)**
-
-Run (from `eling-project/`):
-```bash
-npx --yes create-nx-workspace@latest eling \
-  --preset=ts \
-  --packageManager=npm \
-  --nxCloud=skip \
-  --no-interactive
-```
-Expected: `eling/` created with `nx.json`, `package.json`, `tsconfig.base.json`, empty `packages/` or `libs/`. The npm scope defaults to `@eling`.
-
-- [ ] **Step 3: Verify Nx runs**
+- [ ] **Step 1: Initialize npm + install Nx (in the existing eling/ repo)**
 
 Run (from `eling-project/eling/`):
 ```bash
+rtk npm init -y
+rtk npm install -D nx@latest
+```
+(Show the install to the user first, per the global package-install gate.)
+
+- [ ] **Step 2: Run `nx init`**
+
+Run:
+```bash
+rtk npx nx init --no-interactive
+```
+Expected: creates/updates `nx.json` and `tsconfig.base.json`; folder is now an Nx
+workspace. Existing `docs/` is untouched. If prompted, accept defaults (skip Nx Cloud).
+
+- [ ] **Step 3: Set the npm scope so libs get the `@eling/*` alias**
+
+Ensure `eling/package.json` `name` carries an `@eling` scope. Edit it if `npm init` set
+a plain name:
+```json
+{ "name": "@eling/source", "version": "0.0.0", "private": true }
+```
+This makes `@nx/js:lib` generate the `@eling/shared` import alias in Task 3.
+
+- [ ] **Step 4: Verify Nx runs**
+
+Run:
+```bash
 rtk npx nx --version
 ```
-Expected: prints Nx version (e.g. `20.x`). No error.
+Expected: prints the Nx version (e.g. `20.x`). No error.
 
-- [ ] **Step 4: Commit**
+- [ ] **Step 5: Commit**
 
 ```bash
 rtk git add -A
-rtk git commit -m "chore(p1): scaffold nx workspace"
+rtk git commit -m "chore(p1): initialize nx in existing repo"
 ```
 
 ---
