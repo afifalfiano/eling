@@ -73,7 +73,8 @@
     "esbuild@0.27.3": true,
     "lmdb@3.5.1": true,
     "msgpackr-extract@3.0.4": true,
-    "fsevents@2.3.2": true
+    "fsevents@2.3.2": true,
+    "argon2@0.44.0": true
   },
   "nx": {},
   "dependencies": {
@@ -85,8 +86,11 @@
     "@angular/router": "~21.2.0",
     "@nestjs/common": "^11.0.0",
     "@nestjs/core": "^11.0.0",
+    "@nestjs/jwt": "^11.0.2",
     "@nestjs/platform-express": "^11.0.0",
+    "@nestjs/throttler": "^6.5.0",
     "@prisma/client": "^7.8.0",
+    "argon2": "^0.44.0",
     "axios": "^1.6.0",
     "dotenv": "^17.4.2",
     "reflect-metadata": "^0.2.0",
