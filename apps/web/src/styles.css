@@ -1,1 +1,18 @@
 @import "tailwindcss";
+
+@theme {
+  --color-bg: #FAFAF8;
+  --color-surface: #FFFFFF;
+  --color-text: #1F1E1C;
+  --color-muted: #6B6760;
+  --color-faint: #9A9588;
+  --color-border: #E7E3DA;
+  --color-loop: #D85A30;
+  --color-done: #3B6D11;
+  --color-ctx-kerja: #378ADD;
+  --color-ctx-pribadi: #BA7517;
+  --color-ctx-other: #888780;
+
+  --radius-DEFAULT: 8px;
+  --radius-lg: 12px;
+}
