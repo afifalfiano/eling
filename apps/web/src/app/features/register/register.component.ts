@@ -5,23 +5,23 @@ import { TranslocoModule } from '@jsverse/transloco';
 import { AuthService } from '../../core/auth.service';
 
 @Component({
-  selector: 'app-login',
+  selector: 'app-register',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [FormsModule, TranslocoModule, RouterLink],
   template: `
     <div class="flex flex-col gap-4 p-6 max-w-sm mx-auto mt-20">
-      <h1 class="text-xl font-semibold">{{ 'login.title' | transloco }}</h1>
+      <h1 class="text-xl font-semibold">{{ 'register.title' | transloco }}</h1>
       <input
         type="email"
         [(ngModel)]="email"
-        placeholder="{{ 'login.email' | transloco }}"
+        placeholder="{{ 'register.email' | transloco }}"
         class="border rounded px-3 py-2"
       />
       <input
         type="password"
         [(ngModel)]="password"
-        placeholder="{{ 'login.password' | transloco }}"
+        placeholder="{{ 'register.password' | transloco }}"
         class="border rounded px-3 py-2"
       />
       @if (error()) {
@@ -32,15 +32,15 @@ import { AuthService } from '../../core/auth.service';
         [disabled]="loading()"
         class="bg-black text-white rounded px-4 py-2"
       >
-        {{ loading() ? ('login.loading' | transloco) : ('login.submit' | transloco) }}
+        {{ loading() ? ('register.loading' | transloco) : ('register.submit' | transloco) }}
       </button>
-      <a routerLink="/register" class="text-sm text-center text-gray-500">
-        {{ 'login.register_link' | transloco }}
+      <a routerLink="/login" class="text-sm text-center text-gray-500">
+        {{ 'register.login_link' | transloco }}
       </a>
     </div>
   `,
 })
-export class LoginComponent {
+export class RegisterComponent {
   private readonly auth = inject(AuthService);
   private readonly router = inject(Router);
 
@@ -53,10 +53,10 @@ export class LoginComponent {
     this.error.set('');
     this.loading.set(true);
     try {
-      await this.auth.login(this.email(), this.password());
+      await this.auth.register(this.email(), this.password());
       await this.router.navigate(['/']);
     } catch {
-      this.error.set('login.error');
+      this.error.set('register.error');
     } finally {
       this.loading.set(false);
     }

@@ -7,11 +7,26 @@
   },
   "login": {
     "title": "Eling",
-    "usernameLabel": "Username",
+    "email": "Email",
     "passwordLabel": "Password",
     "submit": "Masuk",
     "loading": "Masuk...",
-    "error": "Username atau password salah."
+    "error": "Email atau password salah.",
+    "register_link": "Belum punya akun? Daftar"
+  },
+  "register": {
+    "title": "Buat akun",
+    "email": "Email",
+    "passwordLabel": "Password",
+    "submit": "Daftar",
+    "loading": "Mendaftar...",
+    "error": "Email sudah terdaftar.",
+    "login_link": "Sudah punya akun? Masuk"
+  },
+  "export": {
+    "title": "Ekspor Data",
+    "description": "Unduh semua data Eling kamu sebagai file JSON.",
+    "download": "Download JSON"
   },
   "feed": {
     "loading": "Memuat...",

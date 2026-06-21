@@ -7,11 +7,26 @@
   },
   "login": {
     "title": "Eling",
-    "usernameLabel": "Username",
+    "email": "Email",
     "passwordLabel": "Password",
     "submit": "Sign in",
     "loading": "Signing in...",
-    "error": "Wrong username or password."
+    "error": "Wrong email or password.",
+    "register_link": "No account? Register"
+  },
+  "register": {
+    "title": "Create account",
+    "email": "Email",
+    "passwordLabel": "Password",
+    "submit": "Register",
+    "loading": "Registering...",
+    "error": "Email already registered.",
+    "login_link": "Already have an account? Sign in"
+  },
+  "export": {
+    "title": "Export Data",
+    "description": "Download all your Eling data as a JSON file.",
+    "download": "Download JSON"
   },
   "feed": {
     "loading": "Loading...",
@@ -27,7 +42,7 @@
   "context": {
     "kerja": "work",
     "pribadi": "personal",
-    "other": "lainnya"
+    "other": "other"
   },
   "loopDetail": {
     "backAriaLabel": "Back",

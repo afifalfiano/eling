@@ -16,7 +16,7 @@ describe('AuthService', () => {
       clear: () => { Object.keys(store).forEach(k => delete store[k]); },
     });
     TestBed.configureTestingModule({
-      providers: [AuthService, provideHttpClient(), provideHttpClientTesting()],
+      providers: [provideHttpClient(), provideHttpClientTesting()],
     });
     service = TestBed.inject(AuthService);
     http = TestBed.inject(HttpTestingController);
@@ -28,17 +28,40 @@ describe('AuthService', () => {
     expect(service.isLoggedIn()).toBe(false);
   });
 
+  it('isAnon is true when not logged in', () => {
+    expect(service.isAnon()).toBe(true);
+  });
+
+  it('isAnon is false after login', async () => {
+    const p = service.login('a@b.com', 'pw');
+    http.expectOne('/api/auth/login').flush({ access_token: 'tok' });
+    await p;
+    expect(service.isAnon()).toBe(false);
+  });
+
   it('login stores token and sets isLoggedIn true', async () => {
-    const promise = service.login('admin', 'pass');
-    http.expectOne('/api/auth/login').flush({ access_token: 'tok123' });
+    const promise = service.login('a@b.com', 'pw');
+    const req = http.expectOne('/api/auth/login');
+    expect(req.request.withCredentials).toBe(true);
+    req.flush({ access_token: 'tok' });
     await promise;
     expect(service.isLoggedIn()).toBe(true);
-    expect(localStorage.getItem('eling_token')).toBe('tok123');
+    expect(localStorage.getItem('eling_token')).toBe('tok');
+  });
+
+  it('register stores token and sets isLoggedIn true', async () => {
+    const promise = service.register('new@b.com', 'pw');
+    const req = http.expectOne('/api/auth/register');
+    expect(req.request.withCredentials).toBe(true);
+    req.flush({ access_token: 'new.tok' });
+    await promise;
+    expect(service.isLoggedIn()).toBe(true);
+    expect(localStorage.getItem('eling_token')).toBe('new.tok');
   });
 
   it('logout clears token', async () => {
-    const promise = service.login('admin', 'pass');
-    http.expectOne('/api/auth/login').flush({ access_token: 'tok123' });
+    const promise = service.login('a@b.com', 'pw');
+    http.expectOne('/api/auth/login').flush({ access_token: 'tok' });
     await promise;
     service.logout();
     expect(service.isLoggedIn()).toBe(false);

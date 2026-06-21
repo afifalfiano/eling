@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable, inject, signal } from '@angular/core';
+import { Injectable, computed, inject, signal } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
 
 const TOKEN_KEY = 'eling_token';
@@ -10,14 +10,31 @@ export class AuthService {
   private readonly _isLoggedIn = signal(!!localStorage.getItem(TOKEN_KEY));
 
   readonly isLoggedIn = this._isLoggedIn.asReadonly();
+  readonly isAnon = computed(() => !this._isLoggedIn());
 
   getToken(): string | null {
     return localStorage.getItem(TOKEN_KEY);
   }
 
-  async login(username: string, password: string): Promise<void> {
+  async login(email: string, password: string): Promise<void> {
     const res = await firstValueFrom(
-      this.http.post<{ access_token: string }>('/api/auth/login', { username, password })
+      this.http.post<{ access_token: string }>(
+        '/api/auth/login',
+        { email, password },
+        { withCredentials: true },
+      ),
+    );
+    localStorage.setItem(TOKEN_KEY, res.access_token);
+    this._isLoggedIn.set(true);
+  }
+
+  async register(email: string, password: string): Promise<void> {
+    const res = await firstValueFrom(
+      this.http.post<{ access_token: string }>(
+        '/api/auth/register',
+        { email, password },
+        { withCredentials: true },
+      ),
     );
     localStorage.setItem(TOKEN_KEY, res.access_token);
     this._isLoggedIn.set(true);

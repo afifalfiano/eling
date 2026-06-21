@@ -76,7 +76,7 @@ export class ItemService {
 
   async downloadExport(): Promise<void> {
     const raw = await firstValueFrom(
-      this.http.get<Record<string, unknown>[]>('/api/items')
+      this.http.get<Record<string, unknown>[]>('/api/items/export')
     );
     const items = raw.map(toItem);
     const blob = new Blob([JSON.stringify(items, null, 2)], {
