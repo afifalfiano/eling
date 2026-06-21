@@ -29,3 +29,8 @@ export interface UpdateItemDto {
   nextStep?: string;
   blockedReason?: string;
 }
+
+export interface RegisterDto {
+  email: string;
+  password: string;
+}
