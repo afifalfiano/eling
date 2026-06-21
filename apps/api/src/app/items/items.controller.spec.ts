@@ -8,6 +8,7 @@ const mockService = {
   create: jest.fn(),
   findAll: jest.fn(),
   findById: jest.fn(),
+  getHistory: jest.fn(),
   update: jest.fn(),
   remove: jest.fn(),
   search: jest.fn(),
@@ -65,6 +66,18 @@ describe('ItemsController', () => {
     await controller.findById('uuid-1', req);
 
     expect(mockService.findById).toHaveBeenCalledWith(
+      'uuid-1',
+      { userId: undefined, sessionId: 'sid-1' },
+    );
+  });
+
+  it('history passes id and owner', async () => {
+    mockService.getHistory.mockResolvedValue([]);
+    const req = makeReq({ sessionId: 'sid-1' });
+
+    await controller.history('uuid-1', req);
+
+    expect(mockService.getHistory).toHaveBeenCalledWith(
       'uuid-1',
       { userId: undefined, sessionId: 'sid-1' },
     );

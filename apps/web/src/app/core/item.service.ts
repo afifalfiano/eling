@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, inject, signal } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
-import type { CreateItemDto, Item, UpdateItemDto } from '@eling/shared';
+import type { CreateItemDto, Item, ItemHistory, UpdateItemDto } from '@eling/shared';
 import { Context, ItemType, LoopStatus } from '@eling/shared';
 
 function toItem(raw: Record<string, unknown>): Item {
@@ -53,6 +53,16 @@ export class ItemService {
       this._items.update((prev) => prev.filter((i) => i.id !== temp.id));
       throw err;
     }
+  }
+
+  async getHistory(id: string): Promise<ItemHistory[]> {
+    const raw = await firstValueFrom(
+      this.http.get<Record<string, unknown>[]>(`/api/items/${id}/history`)
+    );
+    return raw.map((r) => ({
+      ...(r as unknown as ItemHistory),
+      createdAt: new Date(r['createdAt'] as string),
+    }));
   }
 
   async getById(id: string): Promise<Item> {

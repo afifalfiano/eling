@@ -4,6 +4,7 @@ import {
   CreateItemDto,
   filterSearch,
   Item,
+  ItemHistory,
   ItemType,
   LoopStatus,
   UpdateItemDto,
@@ -74,17 +75,61 @@ export class ItemsService {
   }
 
   async update(id: string, dto: UpdateItemDto, owner: Owner): Promise<Item> {
+    const existing = await this.prisma.item.findFirst({
+      where: { id, ...ownerWhere(owner) },
+    });
+    if (!existing) {
+      const row = await this.prisma.item.update({
+        where: { id, ...ownerWhere(owner) },
+        data: dto as Record<string, unknown>,
+      });
+      return toItem(row);
+    }
+
     const data: Record<string, unknown> = { ...dto };
     if (dto.status === LoopStatus.Done) {
       data['doneAt'] = new Date();
     } else if (dto.status !== undefined) {
       data['doneAt'] = null;
     }
-    const row = await this.prisma.item.update({
-      where: { id, ...ownerWhere(owner) },
-      data,
-    });
+
+    const changes: { field: string; from: string | null; to: string | null }[] = [];
+    const trackedFields = ['text', 'status', 'nextStep', 'blockedReason'];
+    for (const key of trackedFields) {
+      if (key in dto && dto[key as keyof UpdateItemDto] !== undefined) {
+        const from = existing[key] ?? null;
+        const to = String(dto[key as keyof UpdateItemDto]) ?? null;
+        if (from !== to) {
+          changes.push({ field: key, from, to });
+        }
+      }
+    }
+
+    const ops: unknown[] = [
+      this.prisma.item.update({ where: { id, ...ownerWhere(owner) }, data }),
+      ...changes.map((c) =>
+        this.prisma.itemHistory.create({
+          data: { itemId: id, field: c.field, fromValue: c.from, toValue: c.to },
+        }),
+      ),
+    ];
+    const [row] = await this.prisma.$transaction(ops as any);
     return toItem(row);
+  }
+
+  async getHistory(itemId: string, owner: Owner): Promise<ItemHistory[]> {
+    const rows = await this.prisma.itemHistory.findMany({
+      where: { item: { id: itemId, ...ownerWhere(owner) } },
+      orderBy: { createdAt: 'desc' },
+    });
+    return rows.map((r) => ({
+      id: r.id,
+      itemId: r.itemId,
+      field: r.field,
+      fromValue: r.fromValue,
+      toValue: r.toValue,
+      createdAt: r.createdAt,
+    }));
   }
 
   async remove(id: string, owner: Owner): Promise<Item> {

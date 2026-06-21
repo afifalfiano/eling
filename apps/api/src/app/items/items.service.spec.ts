@@ -11,6 +11,11 @@ const mockPrisma = {
     update: jest.fn(),
     delete: jest.fn(),
   },
+  itemHistory: {
+    create: jest.fn(),
+    findMany: jest.fn(),
+  },
+  $transaction: jest.fn((ops: unknown[]) => Promise.all(ops)),
 };
 
 const now = new Date();
@@ -151,6 +156,7 @@ describe('ItemsService', () => {
 
   describe('update()', () => {
     it('sets doneAt when status becomes done', async () => {
+      mockPrisma.item.findFirst.mockResolvedValue(baseRow);
       const dto: UpdateItemDto = { status: LoopStatus.Done };
       mockPrisma.item.update.mockResolvedValue({ ...baseRow, status: LoopStatus.Done, doneAt: now });
 
@@ -162,6 +168,7 @@ describe('ItemsService', () => {
     });
 
     it('clears doneAt when status changes away from done', async () => {
+      mockPrisma.item.findFirst.mockResolvedValue({ ...baseRow, status: LoopStatus.Done, doneAt: now });
       const dto: UpdateItemDto = { status: LoopStatus.Open };
       mockPrisma.item.update.mockResolvedValue({ ...baseRow, status: LoopStatus.Open, doneAt: null });
 
@@ -169,6 +176,19 @@ describe('ItemsService', () => {
 
       const call = mockPrisma.item.update.mock.calls[0][0];
       expect(call.data.doneAt).toBeNull();
+    });
+
+    it('records history entry when status changes', async () => {
+      mockPrisma.item.findFirst.mockResolvedValue(baseRow);
+      mockPrisma.item.update.mockResolvedValue({ ...baseRow, status: LoopStatus.Done, doneAt: now });
+      mockPrisma.itemHistory.create.mockResolvedValue({ id: 'h-1', itemId: 'uuid-1', field: 'status', fromValue: LoopStatus.Open, toValue: LoopStatus.Done, createdAt: now });
+
+      const dto: UpdateItemDto = { status: LoopStatus.Done };
+      await service.update('uuid-1', dto, anonOwner);
+
+      expect(mockPrisma.itemHistory.create).toHaveBeenCalledWith({
+        data: { itemId: 'uuid-1', field: 'status', fromValue: LoopStatus.Open, toValue: LoopStatus.Done },
+      });
     });
   });
 
@@ -199,6 +219,24 @@ describe('ItemsService', () => {
       );
       expect(result).toHaveLength(1);
       expect(result[0].text).toBe('beli susu');
+    });
+  });
+
+  describe('getHistory()', () => {
+    it('returns history scoped to item owner', async () => {
+      const rows = [
+        { id: 'h-1', itemId: 'uuid-1', field: 'status', fromValue: LoopStatus.Open, toValue: LoopStatus.Done, createdAt: now },
+      ];
+      mockPrisma.itemHistory.findMany.mockResolvedValue(rows);
+
+      const result = await service.getHistory('uuid-1', anonOwner);
+
+      expect(mockPrisma.itemHistory.findMany).toHaveBeenCalledWith({
+        where: { item: { id: 'uuid-1', sessionId: 'sid-1' } },
+        orderBy: { createdAt: 'desc' },
+      });
+      expect(result).toHaveLength(1);
+      expect(result[0].field).toBe('status');
     });
   });
 

@@ -30,7 +30,21 @@ model Item {
   blockedReason String?
   doneAt        DateTime?
 
+  history     ItemHistory[]
   @@index([userId])
   @@index([sessionId])
   @@map("items")
+}
+
+model ItemHistory {
+  id        String   @id @default(uuid())
+  itemId    String
+  item      Item     @relation(fields: [itemId], references: [id], onDelete: Cascade)
+  field     String
+  fromValue String?
+  toValue   String?
+  createdAt DateTime @default(now())
+
+  @@index([itemId])
+  @@map("item_history")
 }

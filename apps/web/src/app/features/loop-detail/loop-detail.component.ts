@@ -3,7 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { TranslocoModule } from '@jsverse/transloco';
 import { ItemType, LoopStatus } from '@eling/shared';
-import type { Item, UpdateItemDto } from '@eling/shared';
+import type { Item, ItemHistory, UpdateItemDto } from '@eling/shared';
 import { ItemService } from '../../core/item.service';
 import { ToastService } from '../../core/toast.service';
 
@@ -32,6 +32,13 @@ export class LoopDetailComponent implements OnInit {
   protected readonly nextStep = signal('');
   protected readonly blockedReason = signal('');
   protected readonly editText = signal('');
+  protected readonly selectedStatus = signal<LoopStatus>(LoopStatus.Open);
+  protected readonly history = signal<ItemHistory[]>([]);
+  private async refreshHistory(): Promise<void> {
+    try {
+      this.history.set(await this.itemService.getHistory(this.id()));
+    } catch { /* ignore */ }
+  }
 
   ngOnInit(): void {
     this.route.params.subscribe(async (p) => {
@@ -41,6 +48,7 @@ export class LoopDetailComponent implements OnInit {
         this.editText.set(local.text ?? '');
         this.nextStep.set(local.nextStep ?? '');
         this.blockedReason.set(local.blockedReason ?? '');
+        if (local.type === ItemType.Loop) this.selectedStatus.set(local.status!);
       } else {
         try {
           const fetched = await this.itemService.getById(this.id());
@@ -48,39 +56,53 @@ export class LoopDetailComponent implements OnInit {
           this.editText.set(fetched.text ?? '');
           this.nextStep.set(fetched.nextStep ?? '');
           this.blockedReason.set(fetched.blockedReason ?? '');
+          if (fetched.type === ItemType.Loop) this.selectedStatus.set(fetched.status!);
         } catch {
           /* stays undefined → not-found */
         }
       }
+      try {
+        const h = await this.itemService.getHistory(this.id());
+        this.history.set(h);
+      } catch { /* ignore history load failure */ }
     });
   }
 
-  protected async saveText(): Promise<void> {
+  protected selectStatus(status: LoopStatus): void {
+    this.selectedStatus.set(status);
+    if (status !== LoopStatus.Blocked) this.blockedReason.set('');
+  }
+
+  protected async saveAll(): Promise<void> {
+    const dto: Record<string, unknown> = {};
+    const item = this.item();
+    if (!item) return;
+
     const t = this.editText().trim();
-    if (!t || t === this.item()?.text) return;
-    try {
-      await this.itemService.update(this.id(), { text: t });
-      this.toast.show('Tersimpan');
-    } catch {
-      this.toast.show('Gagal menyimpan', 'error');
-    }
-  }
+    if (t && t !== item.text) dto['text'] = t;
 
-  protected async markStatus(status: LoopStatus): Promise<void> {
+    if (item.type === ItemType.Loop) {
+      const ns = this.nextStep();
+      if (ns !== (item.nextStep ?? '')) dto['nextStep'] = ns;
+
+      const st = this.selectedStatus();
+      if (st !== item.status) {
+        dto['status'] = st;
+        if (st === LoopStatus.Blocked) {
+          dto['blockedReason'] = this.blockedReason();
+        } else if (item.blockedReason) {
+          dto['blockedReason'] = '';
+        }
+      }
+    }
+
+    if (Object.keys(dto).length === 0) return;
+
     try {
-      const dto: UpdateItemDto = { status };
-      if (status === LoopStatus.Blocked) (dto as Record<string, unknown>)['blockedReason'] = this.blockedReason();
-      await this.itemService.update(this.id(), dto);
+      await this.itemService.update(this.id(), dto as UpdateItemDto);
+      this.toast.show('Tersimpan');
+      if (item.type === ItemType.Loop) await this.refreshHistory();
       await this.router.navigate(['/']);
-    } catch {
-      this.toast.show('Gagal update status', 'error');
-    }
-  }
-
-  protected async saveNextStep(): Promise<void> {
-    try {
-      await this.itemService.update(this.id(), { nextStep: this.nextStep() });
-      this.toast.show('Tersimpan');
     } catch {
       this.toast.show('Gagal menyimpan', 'error');
     }
@@ -99,5 +121,24 @@ export class LoopDetailComponent implements OnInit {
 
   protected async goBack(): Promise<void> {
     await this.router.navigate(['/']);
+  }
+
+  protected fmtField(field: string): string {
+    const labels: Record<string, string> = { status: 'Status', text: 'Teks', nextStep: 'Next step', blockedReason: 'Alasan blocked' };
+    return labels[field] ?? field;
+  }
+
+  protected fmtVal(field: string, val: string | null): string {
+    if (val === null) return '—';
+    if (field === 'status') {
+      const labels: Record<string, string> = { open: 'Open', blocked: 'Blocker', waiting: 'Menunggu', done: 'Selesai' };
+      return labels[val] ?? val;
+    }
+    return val;
+  }
+
+  protected fmtTime(d: Date): string {
+    const t = d.toLocaleTimeString('id', { hour: '2-digit', minute: '2-digit' });
+    return `${d.toLocaleDateString('id', { day: 'numeric', month: 'short', year: 'numeric' })} ${t}`;
   }
 }

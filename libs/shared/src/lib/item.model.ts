@@ -44,6 +44,15 @@ export interface UpdateItemDto {
   blockedReason?: string;
 }
 
+export interface ItemHistory {
+  id: string;
+  itemId: string;
+  field: string;
+  fromValue: string | null;
+  toValue: string | null;
+  createdAt: Date;
+}
+
 export interface RegisterDto {
   email: string;
   password: string;
