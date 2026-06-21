@@ -1,0 +1,52 @@
+<div class="fixed bottom-0 left-0 right-0 bg-surface border-t border-border px-4 py-3 z-20">
+  <div class="max-w-xl mx-auto space-y-2">
+    <div class="flex gap-2">
+      @for (ctx of contexts; track ctx) {
+        <button
+          type="button"
+          (click)="context.set(ctx)"
+          class="text-xs px-2 py-0.5 rounded-full border transition-colors"
+          [class.border-ctx-kerja]="ctx === 'kerja' && context() === ctx"
+          [class.text-ctx-kerja]="ctx === 'kerja' && context() === ctx"
+          [class.border-ctx-pribadi]="ctx === 'pribadi' && context() === ctx"
+          [class.text-ctx-pribadi]="ctx === 'pribadi' && context() === ctx"
+          [class.border-ctx-other]="ctx === 'other' && context() === ctx"
+          [class.text-ctx-other]="ctx === 'other' && context() === ctx"
+          [class.border-border]="context() !== ctx"
+          [class.text-muted]="context() !== ctx"
+        >{{ ctx }}</button>
+      }
+      <button
+        type="button"
+        (click)="toggleType()"
+        class="ml-auto text-xs px-2 py-0.5 rounded-full border transition-colors"
+        [class.border-loop]="type() === 'loop'"
+        [class.text-loop]="type() === 'loop'"
+        [class.border-muted]="type() === 'note'"
+        [class.text-muted]="type() === 'note'"
+      >{{ type() === 'loop' ? '○ loop' : '· note' }}</button>
+    </div>
+
+    <form (ngSubmit)="onSubmit()" class="flex gap-2">
+      <input
+        data-testid="capture-input"
+        type="text"
+        [value]="text()"
+        (input)="text.set($any($event.target).value)"
+        placeholder="Apa yang ada di kepalamu?"
+        autocomplete="off"
+        class="flex-1 bg-bg border border-border rounded-lg px-3 py-2 text-sm text-text placeholder:text-faint focus:outline-none focus:ring-1 focus:ring-loop min-h-[44px]"
+      />
+      <button
+        type="submit"
+        [disabled]="!text().trim()"
+        aria-label="Tangkap"
+        class="w-11 h-11 flex items-center justify-center rounded-lg bg-loop text-white disabled:opacity-40 hover:opacity-90"
+      >
+        <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+        </svg>
+      </button>
+    </form>
+  </div>
+</div>
