@@ -1,0 +1,23 @@
+<div class="space-y-4 py-4 pb-8">
+  <input
+    data-testid="search-input"
+    type="search"
+    [value]="query()"
+    (input)="onInput($any($event.target).value)"
+    placeholder="Cari di semua riwayat..."
+    autocomplete="off"
+    class="w-full border border-border rounded-lg px-4 py-3 text-sm text-text bg-surface placeholder:text-faint focus:outline-none focus:ring-1 focus:ring-loop"
+  />
+
+  @if (searched() && results().length === 0) {
+    <p class="text-center text-sm text-muted py-8">Tidak ada hasil untuk "{{ query() }}"</p>
+  }
+
+  @if (results().length > 0) {
+    <div class="divide-y divide-border">
+      @for (item of results(); track item.id) {
+        <app-item-row [item]="item" (open)="onOpen($event)" />
+      }
+    </div>
+  }
+</div>
