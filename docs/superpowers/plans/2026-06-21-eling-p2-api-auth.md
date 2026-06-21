@@ -17,7 +17,8 @@
 
 ## Implementation Notes (fill in as deviations occur)
 
-_(empty — to be updated by executor)_
+- **Git repo:** `eling-project/eling/` has its own `.git` — all commits use `git -C .../eling-project/eling`. The parent `projects/` repo does NOT track eling code.
+- **Prisma v7:** `PrismaClient` not available until `npm exec prisma generate` runs. Must run this before `nx build api` if client is missing.
 
 ---
 
