@@ -10,19 +10,19 @@ import { AuthService } from '../../core/auth.service';
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [FormsModule, TranslocoModule, RouterLink],
   template: `
-    <div class="flex flex-col gap-4 p-6 max-w-sm mx-auto mt-20">
+    <div class="flex flex-col gap-5 p-6 max-w-sm mx-auto mt-10">
       <h1 class="text-xl font-semibold">{{ 'login.title' | transloco }}</h1>
       <input
         type="email"
         [(ngModel)]="email"
         placeholder="{{ 'login.email' | transloco }}"
-        class="border rounded px-3 py-2"
+        class="border border-border rounded-lg px-4 py-3 text-sm bg-surface min-h-[48px] focus:outline-none focus:ring-1 focus:ring-loop"
       />
       <input
         type="password"
         [(ngModel)]="password"
         placeholder="{{ 'login.password' | transloco }}"
-        class="border rounded px-3 py-2"
+        class="border border-border rounded-lg px-4 py-3 text-sm bg-surface min-h-[48px] focus:outline-none focus:ring-1 focus:ring-loop"
       />
       @if (error()) {
         <p class="text-red-500 text-sm">{{ error() | transloco }}</p>
@@ -30,13 +30,14 @@ import { AuthService } from '../../core/auth.service';
       <button
         (click)="submit()"
         [disabled]="loading()"
-        class="bg-black text-white rounded px-4 py-2"
+        class="w-full bg-loop text-white rounded-lg py-3 text-sm font-medium min-h-[48px] hover:opacity-90 disabled:opacity-50 active:scale-[0.98] transition-all"
       >
         {{ loading() ? ('login.loading' | transloco) : ('login.submit' | transloco) }}
       </button>
-      <a routerLink="/register" class="text-sm text-center text-gray-500">
-        {{ 'login.register_link' | transloco }}
-      </a>
+      <div class="flex justify-between text-sm mt-2">
+        <a routerLink="/register" class="text-muted hover:text-text min-h-11 flex items-center">{{ 'login.register_link' | transloco }}</a>
+        <a routerLink="/" class="text-muted hover:text-text min-h-11 flex items-center">{{ 'login.skip' | transloco }}</a>
+      </div>
     </div>
   `,
 })

@@ -5,7 +5,7 @@
         <button
           type="button"
           (click)="context.set(ctx)"
-          class="text-xs px-2 py-0.5 rounded-full border transition-colors"
+          class="text-xs px-3 py-1.5 min-h-9 rounded-full border transition-all flex items-center"
           [class.border-ctx-kerja]="ctx === 'kerja' && context() === ctx"
           [class.text-ctx-kerja]="ctx === 'kerja' && context() === ctx"
           [class.border-ctx-pribadi]="ctx === 'pribadi' && context() === ctx"
@@ -14,12 +14,13 @@
           [class.text-ctx-other]="ctx === 'other' && context() === ctx"
           [class.border-border]="context() !== ctx"
           [class.text-muted]="context() !== ctx"
+          [class.scale-105]="context() === ctx"
         >{{ ('context.' + ctx) | transloco }}</button>
       }
       <button
         type="button"
         (click)="toggleType()"
-        class="ml-auto text-xs px-2 py-0.5 rounded-full border transition-colors"
+        class="ml-auto text-xs px-3 py-1.5 min-h-9 rounded-full border transition-all flex items-center"
         [class.border-loop]="type() === 'loop'"
         [class.text-loop]="type() === 'loop'"
         [class.border-muted]="type() === 'note'"
@@ -33,15 +34,17 @@
         type="text"
         [value]="text()"
         (input)="text.set($any($event.target).value)"
+        (focus)="focused.set(true)"
+        (blur)="focused.set(false)"
         [placeholder]="'capture.placeholder' | transloco"
         autocomplete="off"
-        class="flex-1 bg-bg border border-border rounded-lg px-3 py-2 text-sm text-text placeholder:text-faint focus:outline-none focus:ring-1 focus:ring-loop min-h-[44px]"
+        class="flex-1 bg-bg border border-border rounded-lg px-4 py-3 text-sm text-text placeholder:text-faint focus:outline-none focus:ring-1 focus:ring-loop focus:border-loop min-h-[48px] transition-all"
       />
       <button
         type="submit"
         [disabled]="!text().trim()"
         [attr.aria-label]="'capture.captureAriaLabel' | transloco"
-        class="w-11 h-11 flex items-center justify-center rounded-lg bg-loop text-white disabled:opacity-40 hover:opacity-90"
+        class="w-12 h-12 flex items-center justify-center rounded-lg bg-loop text-white disabled:opacity-40 hover:opacity-90 hover:scale-105 active:scale-95 transition-all flex-shrink-0"
       >
         <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
           <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />

@@ -1,22 +1,29 @@
 @if (loading()) {
-  <div class="flex justify-center py-12">
-    <span class="text-sm text-muted">{{ 'feed.loading' | transloco }}</span>
+  <div class="flex flex-col gap-4 py-6">
+    @for (_ of [1,2,3,4,5]; track $index) {
+      <div class="flex items-center gap-3 animate-pulse-skeleton" [style.animation-delay]="($index * 100) + 'ms'">
+        <div class="w-5 h-5 rounded-full bg-border flex-shrink-0"></div>
+        <div class="flex-1 h-4 rounded bg-border" [class.w-3/4]="$index % 2 === 0"></div>
+      </div>
+    }
   </div>
 } @else {
   <div class="space-y-0 divide-y divide-border">
     @if (orderedItems().length === 0) {
-      <div class="py-16 text-center">
+      <div class="py-16 text-center animate-fade-in-up">
         <p class="text-muted text-sm">{{ 'feed.empty' | transloco }}</p>
       </div>
     } @else {
-      <div class="py-2 px-1">
+      <div class="py-2 px-1 animate-fade-in-up">
         <p class="text-xs text-faint">
           {{ 'feed.openCount' | transloco: { count: openCount } }}
         </p>
       </div>
 
       @for (item of orderedItems(); track item.id) {
-        <app-item-row [item]="item" (open)="onOpen($event)" (done)="onToggleDone($event)" />
+        <div class="animate-fade-in-up" [style.animation-delay]="($index * 40) + 'ms'">
+          <app-item-row [item]="item" (open)="onOpen($event)" (done)="onToggleDone($event)" />
+        </div>
       }
     }
   </div>

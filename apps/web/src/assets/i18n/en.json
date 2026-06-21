@@ -1,27 +1,32 @@
 {
   "app": {
     "searchAriaLabel": "Search",
+    "login": "Sign in",
+    "register": "Register",
     "logout": "Logout",
     "exportAriaLabel": "Export JSON",
     "langToggle": "ID"
   },
   "login": {
-    "title": "Eling",
+    "title": "Sign in",
     "email": "Email",
     "passwordLabel": "Password",
     "submit": "Sign in",
     "loading": "Signing in...",
     "error": "Wrong email or password.",
-    "register_link": "No account? Register"
+    "register_link": "No account? Register",
+    "skip": "Skip, use without account"
   },
   "register": {
     "title": "Create account",
+    "info": "Your data stays — nothing is lost.",
     "email": "Email",
     "passwordLabel": "Password",
     "submit": "Register",
     "loading": "Registering...",
     "error": "Email already registered.",
-    "login_link": "Already have an account? Sign in"
+    "login_link": "Already have an account? Sign in",
+    "skip": "Maybe later"
   },
   "export": {
     "title": "Export Data",

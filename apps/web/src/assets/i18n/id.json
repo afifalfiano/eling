@@ -1,27 +1,32 @@
 {
   "app": {
     "searchAriaLabel": "Cari",
+    "login": "Masuk",
+    "register": "Daftar",
     "logout": "Keluar",
     "exportAriaLabel": "Ekspor JSON",
     "langToggle": "EN"
   },
   "login": {
-    "title": "Eling",
+    "title": "Masuk",
     "email": "Email",
     "passwordLabel": "Password",
     "submit": "Masuk",
     "loading": "Masuk...",
     "error": "Email atau password salah.",
-    "register_link": "Belum punya akun? Daftar"
+    "register_link": "Belum punya akun? Daftar",
+    "skip": "Lewati, lanjut pakai"
   },
   "register": {
     "title": "Buat akun",
+    "info": "Data kamu otomatis terbawa — gak ada yang hilang.",
     "email": "Email",
     "passwordLabel": "Password",
     "submit": "Daftar",
     "loading": "Mendaftar...",
     "error": "Email sudah terdaftar.",
-    "login_link": "Sudah punya akun? Masuk"
+    "login_link": "Sudah punya akun? Masuk",
+    "skip": "Nanti saja"
   },
   "export": {
     "title": "Ekspor Data",

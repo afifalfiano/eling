@@ -4,6 +4,7 @@ import { TranslocoModule } from '@jsverse/transloco';
 import { orderFeed } from '@eling/shared';
 import type { Item } from '@eling/shared';
 import { ItemService } from '../../core/item.service';
+import { ToastService } from '../../core/toast.service';
 import { ItemRowComponent } from './item-row.component';
 import { CaptureBarComponent } from '../capture/capture-bar.component';
 
@@ -16,6 +17,7 @@ import { CaptureBarComponent } from '../capture/capture-bar.component';
 })
 export class FeedComponent implements OnInit {
   protected readonly itemService = inject(ItemService);
+  protected readonly toast = inject(ToastService);
   private readonly router = inject(Router);
 
   protected readonly loading = signal(false);
@@ -43,5 +45,6 @@ export class FeedComponent implements OnInit {
   protected async onToggleDone(item: Item): Promise<void> {
     const newStatus = item.status === 'done' ? 'open' : 'done';
     await this.itemService.update(item.id, { status: newStatus });
+    this.toast.show(newStatus === 'done' ? '✓ Selesai' : '↻ Dibuka kembali');
   }
 }

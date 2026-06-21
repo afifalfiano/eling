@@ -11,10 +11,10 @@ import { ItemService } from '../../core/item.service';
   template: `
     <div class="flex flex-col gap-4 p-6 max-w-sm mx-auto mt-20">
       <h1 class="text-xl font-semibold">{{ 'export.title' | transloco }}</h1>
-      <p class="text-sm text-gray-500">{{ 'export.description' | transloco }}</p>
+      <p class="text-sm text-muted">{{ 'export.description' | transloco }}</p>
       <button
         (click)="onExport()"
-        class="bg-black text-white rounded px-4 py-2"
+        class="w-full bg-loop text-white rounded-lg py-3 min-h-[48px] text-sm font-medium hover:opacity-90 active:scale-[0.98] transition-all"
       >
         {{ 'export.download' | transloco }}
       </button>
