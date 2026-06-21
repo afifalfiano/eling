@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { TranslocoModule } from '@jsverse/transloco';
 import type { Context, ItemType } from '@eling/shared';
 import { ItemService } from '../../core/item.service';
@@ -7,15 +8,15 @@ import { ItemService } from '../../core/item.service';
   selector: 'app-capture-bar',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [TranslocoModule],
+  imports: [FormsModule, TranslocoModule],
   templateUrl: './capture-bar.component.html',
 })
 export class CaptureBarComponent {
   private readonly itemService = inject(ItemService);
 
   protected readonly text = signal('');
-  protected readonly type = signal<ItemType>('loop');
-  protected readonly context = signal<Context>('kerja');
+  protected readonly type = signal<ItemType>('note');
+  protected readonly context = signal<Context>('pribadi');
 
   protected readonly contexts: Context[] = ['kerja', 'pribadi', 'other'];
 
