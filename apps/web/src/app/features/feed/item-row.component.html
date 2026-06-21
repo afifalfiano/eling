@@ -9,18 +9,21 @@
   [class.opacity-50]="isDone"
 >
   @if (item().type === 'loop') {
-    <div
-      class="mt-0.5 flex-shrink-0 w-5 h-5 rounded-full border-2 flex items-center justify-center"
+    <button
+      type="button"
+      (click)="onToggleDone($event)"
+      class="mt-0.5 flex-shrink-0 w-5 h-5 rounded-full border-2 flex items-center justify-center cursor-pointer hover:opacity-70 transition-opacity"
       [class.border-loop]="!isDone"
       [class.border-done]="isDone"
       [class.bg-done]="isDone"
+      [attr.aria-label]="isDone ? 'Buka kembali' : 'Tandai selesai'"
     >
       @if (isDone) {
         <svg class="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3" aria-hidden="true">
           <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
         </svg>
       }
-    </div>
+    </button>
   } @else {
     <div
       data-testid="note-dot"

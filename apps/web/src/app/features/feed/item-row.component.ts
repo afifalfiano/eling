@@ -10,9 +10,15 @@ import type { Item } from '@eling/shared';
 export class ItemRowComponent {
   readonly item = input.required<Item>();
   readonly open = output<Item>();
+  readonly done = output<Item>();
 
   protected onClick(): void {
     this.open.emit(this.item());
+  }
+
+  protected onToggleDone(event: Event): void {
+    event.stopPropagation();
+    this.done.emit(this.item());
   }
 
   protected get isDone(): boolean {

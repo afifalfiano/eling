@@ -16,7 +16,7 @@
       </div>
 
       @for (item of orderedItems(); track item.id) {
-        <app-item-row [item]="item" (open)="onOpen($event)" />
+        <app-item-row [item]="item" (open)="onOpen($event)" (done)="onToggleDone($event)" />
       }
     }
   </div>

@@ -39,4 +39,9 @@ export class FeedComponent implements OnInit {
       await this.router.navigate(['/loop', item.id]);
     }
   }
+
+  protected async onToggleDone(item: Item): Promise<void> {
+    const newStatus = item.status === 'done' ? 'open' : 'done';
+    await this.itemService.update(item.id, { status: newStatus });
+  }
 }
