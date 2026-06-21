@@ -7,8 +7,19 @@ datasource db {
   provider = "postgresql"
 }
 
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  password  String
+  createdAt DateTime @default(now())
+  items     Item[]
+}
+
 model Item {
   id            String    @id @default(uuid())
+  userId        String?
+  sessionId     String?
+  user          User?     @relation(fields: [userId], references: [id])
   type          String
   text          String
   context       String
@@ -19,5 +30,7 @@ model Item {
   blockedReason String?
   doneAt        DateTime?
 
+  @@index([userId])
+  @@index([sessionId])
   @@map("items")
 }
