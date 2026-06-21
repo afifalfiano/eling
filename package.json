@@ -1,0 +1,15 @@
+{
+  "name": "@eling/source",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "devDependencies": {
+    "nx": "23.0.0"
+  },
+  "allowScripts": {
+    "nx@23.0.0": true
+  },
+  "nx": {}
+}
