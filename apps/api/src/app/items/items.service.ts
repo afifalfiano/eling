@@ -10,8 +10,12 @@ import {
 } from '@eling/shared';
 import { PrismaService } from '../prisma/prisma.service';
 
+export type Owner = { userId?: string; sessionId?: string };
+
 type PrismaRow = {
   id: string;
+  userId: string | null;
+  sessionId: string | null;
   type: string;
   text: string;
   context: string;
@@ -23,11 +27,15 @@ type PrismaRow = {
   doneAt: Date | null;
 };
 
+function ownerWhere(owner: Owner): Record<string, string | undefined> {
+  return owner.userId ? { userId: owner.userId } : { sessionId: owner.sessionId };
+}
+
 @Injectable()
 export class ItemsService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async create(dto: CreateItemDto): Promise<Item> {
+  async create(dto: CreateItemDto, owner: Owner): Promise<Item> {
     const type = dto.type ?? 'loop';
     const context = dto.context ?? 'kerja';
     const row = await this.prisma.item.create({
@@ -35,18 +43,18 @@ export class ItemsService {
         text: dto.text,
         type,
         context,
+        ...(owner.userId ? { userId: owner.userId } : { sessionId: owner.sessionId }),
         ...(type !== 'note' && { status: 'open' }),
       },
     });
     return toItem(row);
   }
 
-  async findAll(filters: {
-    status?: string;
-    type?: string;
-    context?: string;
-  }): Promise<Item[]> {
-    const where: Record<string, string> = {};
+  async findAll(
+    filters: { status?: string; type?: string; context?: string },
+    owner: Owner,
+  ): Promise<Item[]> {
+    const where: Record<string, string | undefined> = { ...ownerWhere(owner) };
     if (filters.status) where['status'] = filters.status;
     if (filters.type) where['type'] = filters.type;
     if (filters.context) where['context'] = filters.context;
@@ -58,27 +66,41 @@ export class ItemsService {
     return rows.map(toItem);
   }
 
-  async update(id: string, dto: UpdateItemDto): Promise<Item> {
+  async update(id: string, dto: UpdateItemDto, owner: Owner): Promise<Item> {
     const data: Record<string, unknown> = { ...dto };
     if (dto.status === 'done') {
       data['doneAt'] = new Date();
     } else if (dto.status !== undefined) {
       data['doneAt'] = null;
     }
-    const row = await this.prisma.item.update({ where: { id }, data });
+    const row = await this.prisma.item.update({
+      where: { id, ...ownerWhere(owner) },
+      data,
+    });
     return toItem(row);
   }
 
-  async remove(id: string): Promise<Item> {
-    const row = await this.prisma.item.delete({ where: { id } });
+  async remove(id: string, owner: Owner): Promise<Item> {
+    const row = await this.prisma.item.delete({
+      where: { id, ...ownerWhere(owner) },
+    });
     return toItem(row);
   }
 
-  async search(q: string): Promise<Item[]> {
+  async search(q: string, owner: Owner): Promise<Item[]> {
     const rows = await this.prisma.item.findMany({
+      where: ownerWhere(owner),
       orderBy: { createdAt: 'desc' },
     });
     return filterSearch(rows.map(toItem), q);
+  }
+
+  async export(owner: Owner): Promise<Item[]> {
+    const rows = await this.prisma.item.findMany({
+      where: ownerWhere(owner),
+      orderBy: { createdAt: 'desc' },
+    });
+    return rows.map(toItem);
   }
 }
 

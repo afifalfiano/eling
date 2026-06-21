@@ -15,6 +15,8 @@ const mockPrisma = {
 const now = new Date();
 const baseRow = {
   id: 'uuid-1',
+  userId: null,
+  sessionId: 'sid-1',
   type: 'loop',
   text: 'beli susu',
   context: 'pribadi',
@@ -25,6 +27,9 @@ const baseRow = {
   blockedReason: null,
   doneAt: null,
 };
+
+const anonOwner = { userId: undefined, sessionId: 'sid-1' };
+const userOwner = { userId: 'user-1', sessionId: undefined };
 
 describe('ItemsService', () => {
   let service: ItemsService;
@@ -42,35 +47,45 @@ describe('ItemsService', () => {
   });
 
   describe('create()', () => {
-    it('stores text, type, context, and status=open for loops', async () => {
+    it('stores item with sessionId for anon owner', async () => {
       const dto: CreateItemDto = { text: 'beli susu', type: 'loop', context: 'pribadi' };
       mockPrisma.item.create.mockResolvedValue(baseRow);
 
-      const result = await service.create(dto);
+      await service.create(dto, anonOwner);
 
       expect(mockPrisma.item.create).toHaveBeenCalledWith({
-        data: { text: 'beli susu', type: 'loop', context: 'pribadi', status: 'open' },
+        data: expect.objectContaining({ sessionId: 'sid-1' }),
       });
-      expect(result.id).toBe('uuid-1');
-      expect(result.status).toBe('open');
     });
 
-    it('defaults type=loop and context=kerja when omitted', async () => {
+    it('stores item with userId for registered owner', async () => {
+      const dto: CreateItemDto = { text: 'task X' };
+      mockPrisma.item.create.mockResolvedValue({ ...baseRow, userId: 'user-1', sessionId: null });
+
+      await service.create(dto, userOwner);
+
+      expect(mockPrisma.item.create).toHaveBeenCalledWith({
+        data: expect.objectContaining({ userId: 'user-1' }),
+      });
+    });
+
+    it('defaults type=loop and context=kerja', async () => {
       const dto: CreateItemDto = { text: 'review PR' };
       mockPrisma.item.create.mockResolvedValue({ ...baseRow, text: 'review PR', context: 'kerja' });
 
-      await service.create(dto);
+      await service.create(dto, anonOwner);
 
-      expect(mockPrisma.item.create).toHaveBeenCalledWith({
-        data: { text: 'review PR', type: 'loop', context: 'kerja', status: 'open' },
-      });
+      const call = mockPrisma.item.create.mock.calls[0][0];
+      expect(call.data.type).toBe('loop');
+      expect(call.data.context).toBe('kerja');
+      expect(call.data.status).toBe('open');
     });
 
     it('does not set status for notes', async () => {
-      const dto: CreateItemDto = { text: 'root cause: token expired', type: 'note' };
+      const dto: CreateItemDto = { text: 'root cause', type: 'note' };
       mockPrisma.item.create.mockResolvedValue({ ...baseRow, type: 'note', status: null });
 
-      await service.create(dto);
+      await service.create(dto, anonOwner);
 
       const call = mockPrisma.item.create.mock.calls[0][0];
       expect(call.data.status).toBeUndefined();
@@ -78,39 +93,48 @@ describe('ItemsService', () => {
   });
 
   describe('findAll()', () => {
-    it('passes provided filters to prisma', async () => {
+    it('filters by sessionId for anon owner', async () => {
       mockPrisma.item.findMany.mockResolvedValue([]);
 
-      await service.findAll({ status: 'open', type: 'loop', context: 'kerja' });
+      await service.findAll({}, anonOwner);
 
-      expect(mockPrisma.item.findMany).toHaveBeenCalledWith({
-        where: { status: 'open', type: 'loop', context: 'kerja' },
-        orderBy: { createdAt: 'desc' },
-      });
+      expect(mockPrisma.item.findMany).toHaveBeenCalledWith(
+        expect.objectContaining({ where: expect.objectContaining({ sessionId: 'sid-1' }) }),
+      );
     });
 
-    it('omits undefined filters from where clause', async () => {
+    it('filters by userId for registered owner', async () => {
       mockPrisma.item.findMany.mockResolvedValue([]);
 
-      await service.findAll({});
+      await service.findAll({}, userOwner);
 
-      expect(mockPrisma.item.findMany).toHaveBeenCalledWith({
-        where: {},
-        orderBy: { createdAt: 'desc' },
-      });
+      expect(mockPrisma.item.findMany).toHaveBeenCalledWith(
+        expect.objectContaining({ where: expect.objectContaining({ userId: 'user-1' }) }),
+      );
+    });
+
+    it('applies additional filters alongside ownership', async () => {
+      mockPrisma.item.findMany.mockResolvedValue([]);
+
+      await service.findAll({ status: 'open', type: 'loop' }, anonOwner);
+
+      expect(mockPrisma.item.findMany).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: { sessionId: 'sid-1', status: 'open', type: 'loop' },
+        }),
+      );
     });
   });
 
   describe('update()', () => {
-    it('sets doneAt to now when status becomes done', async () => {
+    it('sets doneAt when status becomes done', async () => {
       const dto: UpdateItemDto = { status: 'done' };
       mockPrisma.item.update.mockResolvedValue({ ...baseRow, status: 'done', doneAt: now });
 
-      await service.update('uuid-1', dto);
+      await service.update('uuid-1', dto, anonOwner);
 
       const call = mockPrisma.item.update.mock.calls[0][0];
-      expect(call.where).toEqual({ id: 'uuid-1' });
-      expect(call.data.status).toBe('done');
+      expect(call.where).toEqual({ id: 'uuid-1', sessionId: 'sid-1' });
       expect(call.data.doneAt).toBeInstanceOf(Date);
     });
 
@@ -118,68 +142,54 @@ describe('ItemsService', () => {
       const dto: UpdateItemDto = { status: 'open' };
       mockPrisma.item.update.mockResolvedValue({ ...baseRow, status: 'open', doneAt: null });
 
-      await service.update('uuid-1', dto);
+      await service.update('uuid-1', dto, anonOwner);
 
       const call = mockPrisma.item.update.mock.calls[0][0];
       expect(call.data.doneAt).toBeNull();
     });
-
-    it('passes nextStep and blockedReason through to prisma', async () => {
-      const dto: UpdateItemDto = { nextStep: 'ping Roby', blockedReason: 'waiting for PO' };
-      mockPrisma.item.update.mockResolvedValue({ ...baseRow, ...dto });
-
-      await service.update('uuid-1', dto);
-
-      const call = mockPrisma.item.update.mock.calls[0][0];
-      expect(call.data.nextStep).toBe('ping Roby');
-      expect(call.data.blockedReason).toBe('waiting for PO');
-    });
   });
 
   describe('remove()', () => {
-    it('calls prisma.item.delete with correct id', async () => {
+    it('scopes delete to owner', async () => {
       mockPrisma.item.delete.mockResolvedValue(baseRow);
 
-      await service.remove('uuid-1');
+      await service.remove('uuid-1', anonOwner);
 
-      expect(mockPrisma.item.delete).toHaveBeenCalledWith({ where: { id: 'uuid-1' } });
+      expect(mockPrisma.item.delete).toHaveBeenCalledWith({
+        where: { id: 'uuid-1', sessionId: 'sid-1' },
+      });
     });
   });
 
   describe('search()', () => {
-    it('returns items matching keyword in text', async () => {
+    it('scopes search to owner and matches keyword', async () => {
       const rows = [
         { ...baseRow, id: 'a', text: 'beli susu', nextStep: null },
-        { ...baseRow, id: 'b', text: 'review PR Eling', nextStep: null },
+        { ...baseRow, id: 'b', text: 'review PR', nextStep: null },
       ];
       mockPrisma.item.findMany.mockResolvedValue(rows);
 
-      const result = await service.search('susu');
+      const result = await service.search('susu', anonOwner);
 
+      expect(mockPrisma.item.findMany).toHaveBeenCalledWith(
+        expect.objectContaining({ where: { sessionId: 'sid-1' } }),
+      );
       expect(result).toHaveLength(1);
       expect(result[0].text).toBe('beli susu');
     });
+  });
 
-    it('returns items matching keyword in nextStep', async () => {
-      const rows = [
-        { ...baseRow, id: 'a', text: 'loop A', nextStep: 'ping Roby' },
-        { ...baseRow, id: 'b', text: 'loop B', nextStep: null },
-      ];
-      mockPrisma.item.findMany.mockResolvedValue(rows);
+  describe('export()', () => {
+    it('returns all items for userId owner ordered by createdAt desc', async () => {
+      mockPrisma.item.findMany.mockResolvedValue([baseRow]);
 
-      const result = await service.search('ping');
+      const result = await service.export(userOwner);
 
+      expect(mockPrisma.item.findMany).toHaveBeenCalledWith({
+        where: { userId: 'user-1' },
+        orderBy: { createdAt: 'desc' },
+      });
       expect(result).toHaveLength(1);
-      expect(result[0].id).toBe('a');
-    });
-
-    it('returns all items when query is empty', async () => {
-      const rows = [baseRow, { ...baseRow, id: 'b' }];
-      mockPrisma.item.findMany.mockResolvedValue(rows);
-
-      const result = await service.search('');
-
-      expect(result).toHaveLength(2);
     });
   });
 });

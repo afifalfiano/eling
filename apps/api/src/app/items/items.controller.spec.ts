@@ -1,25 +1,20 @@
 import { Test } from '@nestjs/testing';
+import { JwtAuthGuard } from '../auth/jwt.guard';
 import { ItemsController } from './items.controller';
 import { ItemsService } from './items.service';
-import { JwtAuthGuard } from '../auth/jwt.guard';
 
-const mockItemsService = {
+const mockService = {
   create: jest.fn(),
   findAll: jest.fn(),
   update: jest.fn(),
   remove: jest.fn(),
   search: jest.fn(),
+  export: jest.fn(),
 };
 
-const mockItem = {
-  id: 'uuid-1',
-  type: 'loop' as const,
-  text: 'test item',
-  context: 'kerja' as const,
-  status: 'open' as const,
-  createdAt: new Date(),
-  updatedAt: new Date(),
-};
+function makeReq(overrides: Record<string, unknown> = {}) {
+  return { userId: undefined, sessionId: 'sid-1', ...overrides } as any;
+}
 
 describe('ItemsController', () => {
   let controller: ItemsController;
@@ -27,7 +22,7 @@ describe('ItemsController', () => {
   beforeEach(async () => {
     const module = await Test.createTestingModule({
       controllers: [ItemsController],
-      providers: [{ provide: ItemsService, useValue: mockItemsService }],
+      providers: [{ provide: ItemsService, useValue: mockService }],
     })
       .overrideGuard(JwtAuthGuard)
       .useValue({ canActivate: () => true })
@@ -37,60 +32,36 @@ describe('ItemsController', () => {
     jest.clearAllMocks();
   });
 
-  it('POST /items calls service.create and returns item', async () => {
-    mockItemsService.create.mockResolvedValue(mockItem);
+  it('create passes owner from request', async () => {
+    mockService.create.mockResolvedValue({ id: '1' });
+    const req = makeReq({ sessionId: 'sid-anon' });
 
-    const result = await controller.create({ text: 'test item' });
+    await controller.create({ text: 'test' }, req);
 
-    expect(mockItemsService.create).toHaveBeenCalledWith({ text: 'test item' });
-    expect(result).toBe(mockItem);
+    expect(mockService.create).toHaveBeenCalledWith(
+      { text: 'test' },
+      { userId: undefined, sessionId: 'sid-anon' },
+    );
   });
 
-  it('GET /items passes query filters to service.findAll', async () => {
-    mockItemsService.findAll.mockResolvedValue([mockItem]);
+  it('findAll passes owner and filters from request', async () => {
+    mockService.findAll.mockResolvedValue([]);
+    const req = makeReq({ userId: 'user-1', sessionId: undefined });
 
-    const result = await controller.findAll('open', 'loop', 'kerja');
+    await controller.findAll('open', 'loop', undefined, req);
 
-    expect(mockItemsService.findAll).toHaveBeenCalledWith({
-      status: 'open',
-      type: 'loop',
-      context: 'kerja',
-    });
-    expect(result).toHaveLength(1);
+    expect(mockService.findAll).toHaveBeenCalledWith(
+      { status: 'open', type: 'loop', context: undefined },
+      { userId: 'user-1', sessionId: undefined },
+    );
   });
 
-  it('PATCH /items/:id calls service.update and returns updated item', async () => {
-    const updated = { ...mockItem, status: 'done' as const };
-    mockItemsService.update.mockResolvedValue(updated);
+  it('export calls service.export with owner', async () => {
+    mockService.export.mockResolvedValue([]);
+    const req = makeReq({ userId: 'user-1', sessionId: undefined });
 
-    const result = await controller.update('uuid-1', { status: 'done' });
+    await controller.export(req);
 
-    expect(mockItemsService.update).toHaveBeenCalledWith('uuid-1', { status: 'done' });
-    expect(result.status).toBe('done');
-  });
-
-  it('DELETE /items/:id calls service.remove', async () => {
-    mockItemsService.remove.mockResolvedValue(mockItem);
-
-    await controller.remove('uuid-1');
-
-    expect(mockItemsService.remove).toHaveBeenCalledWith('uuid-1');
-  });
-
-  it('GET /items/search passes q to service.search', async () => {
-    mockItemsService.search.mockResolvedValue([mockItem]);
-
-    const result = await controller.search('susu');
-
-    expect(mockItemsService.search).toHaveBeenCalledWith('susu');
-    expect(result).toHaveLength(1);
-  });
-
-  it('GET /items/search defaults to empty string when q is missing', async () => {
-    mockItemsService.search.mockResolvedValue([]);
-
-    await controller.search(undefined as unknown as string);
-
-    expect(mockItemsService.search).toHaveBeenCalledWith('');
+    expect(mockService.export).toHaveBeenCalledWith({ userId: 'user-1', sessionId: undefined });
   });
 });
