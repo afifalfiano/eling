@@ -1,0 +1,80 @@
+@if (item(); as loop) {
+  <div class="space-y-6 py-4">
+    <div class="flex items-start gap-3">
+      <button (click)="goBack()" aria-label="Kembali" class="text-muted hover:text-text mt-0.5">
+        <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/>
+        </svg>
+      </button>
+      <p class="text-base font-medium text-text leading-snug">{{ loop.text }}</p>
+    </div>
+
+    <div class="space-y-1">
+      <label class="text-xs text-muted uppercase tracking-wide">Next step</label>
+      <div class="flex gap-2">
+        <input
+          type="text"
+          [ngModel]="nextStep()"
+          (ngModelChange)="nextStep.set($event)"
+          name="nextStep"
+          placeholder="Langkah berikutnya..."
+          class="flex-1 border border-border rounded px-3 py-2 text-sm text-text bg-surface focus:outline-none focus:ring-1 focus:ring-loop"
+        />
+        <button
+          type="button"
+          (click)="saveNextStep()"
+          class="px-3 py-2 text-sm bg-surface border border-border rounded hover:bg-gray-50 text-muted"
+        >Simpan</button>
+      </div>
+    </div>
+
+    <div class="space-y-2">
+      <p class="text-xs text-muted uppercase tracking-wide">Status</p>
+      <div class="flex flex-col gap-2">
+        <button
+          data-testid="btn-done"
+          type="button"
+          (click)="markStatus('done')"
+          class="w-full py-2.5 rounded-lg border border-done text-done text-sm font-medium hover:bg-green-50"
+        >✓ Tandai selesai</button>
+
+        <button
+          data-testid="btn-blocked"
+          type="button"
+          (click)="markStatus('blocked')"
+          class="w-full py-2.5 rounded-lg border border-border text-muted text-sm hover:bg-gray-50"
+        >Blocked / menunggu</button>
+
+        <button
+          data-testid="btn-waiting"
+          type="button"
+          (click)="markStatus('waiting')"
+          class="w-full py-2.5 rounded-lg border border-border text-muted text-sm hover:bg-gray-50"
+        >Menunggu diskusi</button>
+
+        <button
+          data-testid="btn-open"
+          type="button"
+          (click)="markStatus('open')"
+          class="w-full py-2.5 rounded-lg border border-border text-muted text-sm hover:bg-gray-50"
+        >Buka kembali</button>
+      </div>
+    </div>
+
+    @if (loop.status === 'blocked' || loop.status === 'waiting') {
+      <div class="space-y-1">
+        <label class="text-xs text-muted uppercase tracking-wide">Alasan blocked</label>
+        <input
+          type="text"
+          [ngModel]="blockedReason()"
+          (ngModelChange)="blockedReason.set($event)"
+          name="blockedReason"
+          placeholder="Kenapa blocked?"
+          class="w-full border border-border rounded px-3 py-2 text-sm text-text bg-surface focus:outline-none focus:ring-1 focus:ring-loop"
+        />
+      </div>
+    }
+  </div>
+} @else {
+  <p class="text-muted text-sm py-8">Loop tidak ditemukan.</p>
+}
