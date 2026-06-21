@@ -31,20 +31,24 @@ export class FeedComponent implements OnInit {
     this.loading.set(true);
     try {
       await this.itemService.loadAll();
+    } catch {
+      this.toast.show('Gagal memuat data', 'error');
     } finally {
       this.loading.set(false);
     }
   }
 
   protected async onOpen(item: Item): Promise<void> {
-    if (item.type === ItemType.Loop) {
-      await this.router.navigate(['/loop', item.id]);
-    }
+    await this.router.navigate(['/loop', item.id]);
   }
 
   protected async onToggleDone(item: Item): Promise<void> {
-    const newStatus = item.status === LoopStatus.Done ? LoopStatus.Open : LoopStatus.Done;
-    await this.itemService.update(item.id, { status: newStatus });
-    this.toast.show(newStatus === LoopStatus.Done ? '✓ Selesai' : '↻ Dibuka kembali');
+    try {
+      const newStatus = item.status === LoopStatus.Done ? LoopStatus.Open : LoopStatus.Done;
+      await this.itemService.update(item.id, { status: newStatus });
+      this.toast.show(newStatus === LoopStatus.Done ? '✓ Selesai' : '↻ Dibuka kembali');
+    } catch {
+      this.toast.show('Gagal update status', 'error');
+    }
   }
 }

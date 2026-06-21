@@ -56,12 +56,17 @@
     "save": "Simpan",
     "statusLabel": "Status",
     "markDone": "✓ Tandai selesai",
-    "blocked": "Blocked / menunggu",
+    "blocked": "Blocker",
     "waiting": "Menunggu diskusi",
     "reopen": "Buka kembali",
     "blockedReasonLabel": "Alasan blocked",
     "blockedReasonPlaceholder": "Kenapa blocked?",
-    "notFound": "Loop tidak ditemukan."
+    "notFound": "Item tidak ditemukan.",
+    "delete": "Hapus"
+  },
+  "notFound": {
+    "message": "Halaman tidak ditemukan.",
+    "home": "← Ke feed"
   },
   "search": {
     "placeholder": "Cari di semua riwayat...",

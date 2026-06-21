@@ -6,7 +6,7 @@
     (input)="onInput($any($event.target).value)"
     [placeholder]="'search.placeholder' | transloco"
     autocomplete="off"
-    class="w-full border border-border rounded-lg px-4 py-3 text-sm text-text bg-surface placeholder:text-faint focus:outline-none focus:ring-1 focus:ring-loop"
+    class="w-full border border-border rounded-lg px-4 py-3 text-sm text-text bg-surface placeholder:text-faint focus:outline-none focus:ring-1 focus:ring-loop min-h-[48px]"
   />
 
   @if (searched() && results().length === 0) {

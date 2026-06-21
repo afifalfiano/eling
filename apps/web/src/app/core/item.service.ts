@@ -55,6 +55,13 @@ export class ItemService {
     }
   }
 
+  async getById(id: string): Promise<Item> {
+    const raw = await firstValueFrom(
+      this.http.get<Record<string, unknown>>(`/api/items/${id}`)
+    );
+    return toItem(raw);
+  }
+
   async update(id: string, dto: UpdateItemDto): Promise<void> {
     const raw = await firstValueFrom(
       this.http.patch<Record<string, unknown>>(`/api/items/${id}`, dto)

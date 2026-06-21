@@ -56,12 +56,17 @@
     "save": "Save",
     "statusLabel": "Status",
     "markDone": "✓ Mark done",
-    "blocked": "Blocked / waiting",
+    "blocked": "Blocked",
     "waiting": "Waiting on discussion",
     "reopen": "Reopen",
     "blockedReasonLabel": "Blocked reason",
     "blockedReasonPlaceholder": "Why is it blocked?",
-    "notFound": "Loop not found."
+    "notFound": "Item not found.",
+    "delete": "Delete"
+  },
+  "notFound": {
+    "message": "Page not found.",
+    "home": "← Back to feed"
   },
   "search": {
     "placeholder": "Search all history...",

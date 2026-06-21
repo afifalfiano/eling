@@ -36,5 +36,9 @@ export const appRoutes: Route[] = [
     loadComponent: () =>
       import('./features/export-gate/export-gate.component').then((m) => m.ExportGateComponent),
   },
-  { path: '**', redirectTo: '' },
+  {
+    path: '**',
+    loadComponent: () =>
+      import('./features/not-found/not-found.component').then((m) => m.NotFoundComponent),
+  },
 ];

@@ -50,6 +50,13 @@ export class ItemsService {
     return toItem(row);
   }
 
+  async findById(id: string, owner: Owner): Promise<Item | null> {
+    const row = await this.prisma.item.findFirst({
+      where: { id, ...ownerWhere(owner) },
+    });
+    return row ? toItem(row) : null;
+  }
+
   async findAll(
     filters: { status?: string; type?: string; context?: string },
     owner: Owner,

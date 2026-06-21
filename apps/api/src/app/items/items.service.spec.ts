@@ -7,6 +7,7 @@ const mockPrisma = {
   item: {
     create: jest.fn(),
     findMany: jest.fn(),
+    findFirst: jest.fn(),
     update: jest.fn(),
     delete: jest.fn(),
   },
@@ -89,6 +90,28 @@ describe('ItemsService', () => {
 
       const call = mockPrisma.item.create.mock.calls[0][0];
       expect(call.data.status).toBeUndefined();
+    });
+  });
+
+  describe('findById()', () => {
+    it('returns item scoped to owner', async () => {
+      mockPrisma.item.findFirst.mockResolvedValue(baseRow);
+
+      const result = await service.findById('uuid-1', anonOwner);
+
+      expect(mockPrisma.item.findFirst).toHaveBeenCalledWith({
+        where: { id: 'uuid-1', sessionId: 'sid-1' },
+      });
+      expect(result).toBeTruthy();
+      expect(result!.text).toBe('beli susu');
+    });
+
+    it('returns null when item not found for owner', async () => {
+      mockPrisma.item.findFirst.mockResolvedValue(null);
+
+      const result = await service.findById('uuid-1', anonOwner);
+
+      expect(result).toBeNull();
     });
   });
 

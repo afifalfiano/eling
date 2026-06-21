@@ -1,67 +1,118 @@
-@if (item(); as loop) {
-  <div class="space-y-6 py-4">
-    <div class="flex items-start gap-3">
-      <button (click)="goBack()" [attr.aria-label]="'loopDetail.backAriaLabel' | transloco" class="text-muted hover:text-text mt-0.5">
-        <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/>
-        </svg>
-      </button>
-      <p class="text-base font-medium text-text leading-snug">{{ loop.text }}</p>
-    </div>
+<div class="space-y-6 py-4">
+  <div class="flex items-start gap-3">
+    <button (click)="goBack()" [attr.aria-label]="'loopDetail.backAriaLabel' | transloco" class="text-muted hover:text-text mt-0.5 w-11 h-11 flex items-center justify-center">
+      <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/>
+      </svg>
+    </button>
 
-    <div class="space-y-1">
-      <label class="text-xs text-muted uppercase tracking-wide">{{ 'loopDetail.nextStepLabel' | transloco }}</label>
-      <div class="flex gap-2">
-        <input
-          type="text"
-          [ngModel]="nextStep()"
-          (ngModelChange)="nextStep.set($event)"
-          name="nextStep"
-          [placeholder]="'loopDetail.nextStepPlaceholder' | transloco"
-          class="flex-1 border border-border rounded px-3 py-2 text-sm text-text bg-surface focus:outline-none focus:ring-1 focus:ring-loop"
-        />
-        <button
-          type="button"
-          (click)="saveNextStep()"
-          class="px-3 py-2 text-sm bg-surface border border-border rounded hover:bg-gray-50 text-muted"
-        >{{ 'loopDetail.save' | transloco }}</button>
+    @if (item(); as it) {
+      @if (it.type === ItemType.Note) {
+        <div class="flex-1 space-y-2">
+          <textarea
+            [ngModel]="editText()"
+            (ngModelChange)="editText.set($event)"
+            name="text"
+            rows="3"
+            class="w-full border border-border rounded-lg px-4 py-3 text-sm text-text bg-surface focus:outline-none focus:ring-1 focus:ring-loop resize-none min-h-[48px]"
+          ></textarea>
+          <button
+            data-testid="btn-save-note"
+            type="button"
+            (click)="saveText()"
+            class="px-4 py-2 min-h-[48px] text-sm bg-loop text-white rounded-lg hover:opacity-90 active:scale-[0.98] transition-all"
+          >{{ 'loopDetail.save' | transloco }}</button>
+          <button
+            data-testid="btn-delete-note"
+            type="button"
+            (click)="onDelete()"
+            class="px-4 py-2 min-h-[48px] text-sm text-red-600 border border-red-300 rounded-lg hover:bg-red-50 active:scale-[0.98] transition-all ml-2"
+          >{{ 'loopDetail.delete' | transloco }}</button>
+        </div>
+      } @else {
+        <div class="flex-1 space-y-2">
+          <textarea
+            [ngModel]="editText()"
+            (ngModelChange)="editText.set($event)"
+            name="text"
+            rows="2"
+            class="w-full border border-border rounded-lg px-4 py-3 text-sm text-text bg-surface focus:outline-none focus:ring-1 focus:ring-loop resize-none min-h-[48px]"
+          ></textarea>
+          <button
+            data-testid="btn-save-loop"
+            type="button"
+            (click)="saveText()"
+            class="px-4 py-2 min-h-[48px] text-sm bg-loop text-white rounded-lg hover:opacity-90 active:scale-[0.98] transition-all"
+          >{{ 'loopDetail.save' | transloco }}</button>
+        </div>
+      }
+    }
+  </div>
+
+  @if (item(); as loop) {
+    @if (loop.type === ItemType.Loop) {
+      <div class="space-y-1">
+        <label class="text-xs text-muted uppercase tracking-wide">{{ 'loopDetail.nextStepLabel' | transloco }}</label>
+        <div class="flex gap-2">
+          <input
+            type="text"
+            [ngModel]="nextStep()"
+            (ngModelChange)="nextStep.set($event)"
+            name="nextStep"
+            [placeholder]="'loopDetail.nextStepPlaceholder' | transloco"
+            class="flex-1 border border-border rounded-lg px-4 py-3 text-sm text-text bg-surface focus:outline-none focus:ring-1 focus:ring-loop min-h-[48px]"
+          />
+          <button
+            type="button"
+            (click)="saveNextStep()"
+            class="px-4 py-2 min-h-[44px] text-sm bg-surface border border-border rounded hover:bg-gray-50 text-muted active:scale-[0.98] transition-all"
+          >{{ 'loopDetail.save' | transloco }}</button>
+        </div>
       </div>
-    </div>
 
-    <div class="space-y-2">
-      <p class="text-xs text-muted uppercase tracking-wide">{{ 'loopDetail.statusLabel' | transloco }}</p>
-      <div class="flex flex-col gap-2">
-        <button
-          data-testid="btn-done"
-          type="button"
-          (click)="markStatus(LoopStatus.Done)"
-          class="w-full py-2.5 rounded-lg border border-done text-done text-sm font-medium hover:bg-green-50"
-        >{{ 'loopDetail.markDone' | transloco }}</button>
+      <div class="space-y-2">
+        <p class="text-xs text-muted uppercase tracking-wide">{{ 'loopDetail.statusLabel' | transloco }}</p>
+        <div class="flex flex-col gap-2">
+          <button
+            data-testid="btn-done"
+            type="button"
+            (click)="markStatus(LoopStatus.Done)"
+            [class.bg-green-100]="loop.status === LoopStatus.Done"
+            class="w-full py-2.5 min-h-[48px] rounded-lg border border-done text-done text-sm font-medium hover:bg-green-100 active:scale-[0.98] transition-all"
+          >{{ 'loopDetail.markDone' | transloco }}</button>
 
-        <button
-          data-testid="btn-blocked"
-          type="button"
-          (click)="markStatus(LoopStatus.Blocked)"
-          class="w-full py-2.5 rounded-lg border border-border text-muted text-sm hover:bg-gray-50"
-        >{{ 'loopDetail.blocked' | transloco }}</button>
+          <button
+            data-testid="btn-blocked"
+            type="button"
+            (click)="markStatus(LoopStatus.Blocked)"
+            [class.bg-loop/10]="loop.status === LoopStatus.Blocked"
+            [class.border-loop]="loop.status === LoopStatus.Blocked"
+            [class.text-loop]="loop.status === LoopStatus.Blocked"
+            class="w-full py-2.5 min-h-[48px] rounded-lg border border-border text-muted text-sm hover:bg-gray-50 active:scale-[0.98] transition-all"
+          >{{ 'loopDetail.blocked' | transloco }}</button>
 
-        <button
-          data-testid="btn-waiting"
-          type="button"
-          (click)="markStatus(LoopStatus.Waiting)"
-          class="w-full py-2.5 rounded-lg border border-border text-muted text-sm hover:bg-gray-50"
-        >{{ 'loopDetail.waiting' | transloco }}</button>
+          <button
+            data-testid="btn-waiting"
+            type="button"
+            (click)="markStatus(LoopStatus.Waiting)"
+            [class.bg-loop/10]="loop.status === LoopStatus.Waiting"
+            [class.border-loop]="loop.status === LoopStatus.Waiting"
+            [class.text-loop]="loop.status === LoopStatus.Waiting"
+            class="w-full py-2.5 min-h-[48px] rounded-lg border border-border text-muted text-sm hover:bg-gray-50 active:scale-[0.98] transition-all"
+          >{{ 'loopDetail.waiting' | transloco }}</button>
 
-        <button
-          data-testid="btn-open"
-          type="button"
-          (click)="markStatus(LoopStatus.Open)"
-          class="w-full py-2.5 rounded-lg border border-border text-muted text-sm hover:bg-gray-50"
-        >{{ 'loopDetail.reopen' | transloco }}</button>
+          <button
+            data-testid="btn-open"
+            type="button"
+            (click)="markStatus(LoopStatus.Open)"
+            [class.bg-border/20]="loop.status === LoopStatus.Open"
+            [class.text-text]="loop.status === LoopStatus.Open"
+            [class.font-medium]="loop.status === LoopStatus.Open"
+            class="w-full py-2.5 min-h-[48px] rounded-lg border border-border text-muted text-sm hover:bg-gray-50 active:scale-[0.98] transition-all"
+          >{{ 'loopDetail.reopen' | transloco }}</button>
+        </div>
       </div>
-    </div>
 
-    @if (loop.status === LoopStatus.Blocked || loop.status === LoopStatus.Waiting) {
       <div class="space-y-1">
         <label class="text-xs text-muted uppercase tracking-wide">{{ 'loopDetail.blockedReasonLabel' | transloco }}</label>
         <input
@@ -70,11 +121,27 @@
           (ngModelChange)="blockedReason.set($event)"
           name="blockedReason"
           [placeholder]="'loopDetail.blockedReasonPlaceholder' | transloco"
-          class="w-full border border-border rounded px-3 py-2 text-sm text-text bg-surface focus:outline-none focus:ring-1 focus:ring-loop"
+          class="w-full border border-border rounded-lg px-4 py-3 text-sm text-text bg-surface focus:outline-none focus:ring-1 focus:ring-loop min-h-[48px]"
         />
       </div>
+
+      <div class="pt-2 border-t border-border">
+        <button
+          data-testid="btn-delete"
+          type="button"
+          (click)="onDelete()"
+          class="w-full py-2.5 min-h-[48px] text-sm text-red-600 border border-red-300 rounded-lg hover:bg-red-50 active:scale-[0.98] transition-all"
+        >{{ 'loopDetail.delete' | transloco }}</button>
+      </div>
     }
-  </div>
-} @else {
-  <p class="text-muted text-sm py-8">{{ 'loopDetail.notFound' | transloco }}</p>
-}
+  } @else {
+    <div class="py-16 text-center flex flex-col items-center gap-4">
+      <svg class="w-14 h-14 text-border" fill="none" viewBox="0 0 56 56" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+        <circle cx="28" cy="28" r="20"/>
+        <path stroke-linecap="round" d="M28 20v10m0 4v.01"/>
+      </svg>
+      <p class="text-muted text-sm">{{ 'loopDetail.notFound' | transloco }}</p>
+      <button (click)="goBack()" class="text-sm text-loop underline-offset-2 hover:underline">← {{ 'loopDetail.backAriaLabel' | transloco }}</button>
+    </div>
+  }
+</div>

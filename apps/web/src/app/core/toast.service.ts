@@ -3,7 +3,7 @@ import { Injectable, signal } from '@angular/core';
 export interface Toast {
   id: number;
   text: string;
-  type: 'success' | 'info';
+  type: 'success' | 'info' | 'error';
 }
 
 @Injectable({ providedIn: 'root' })

@@ -10,7 +10,14 @@
 } @else {
   <div class="space-y-0 divide-y divide-border">
     @if (orderedItems().length === 0) {
-      <div class="py-16 text-center animate-fade-in-up">
+      <div class="py-20 text-center animate-fade-in-up flex flex-col items-center gap-4">
+        <svg class="w-16 h-16 text-border" fill="none" viewBox="0 0 64 64" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+          <rect x="8" y="16" width="48" height="36" rx="4"/>
+          <path stroke-linecap="round" d="M8 24h48"/>
+          <circle cx="20" cy="34" r="3"/>
+          <circle cx="32" cy="34" r="3"/>
+          <circle cx="44" cy="34" r="3"/>
+        </svg>
         <p class="text-muted text-sm">{{ 'feed.empty' | transloco }}</p>
       </div>
     } @else {

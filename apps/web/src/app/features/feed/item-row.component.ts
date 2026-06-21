@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
 import type { Item } from '@eling/shared';
-import { Context, LoopStatus } from '@eling/shared';
+import { Context, ItemType, LoopStatus } from '@eling/shared';
 
 @Component({
   selector: 'app-item-row',
@@ -9,6 +9,9 @@ import { Context, LoopStatus } from '@eling/shared';
   templateUrl: './item-row.component.html',
 })
 export class ItemRowComponent {
+  protected readonly ItemType = ItemType;
+  protected readonly LoopStatus = LoopStatus;
+
   readonly item = input.required<Item>();
   readonly open = output<Item>();
   readonly done = output<Item>();

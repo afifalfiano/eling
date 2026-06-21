@@ -8,7 +8,7 @@
   class="flex items-start gap-3 py-3 px-1 cursor-pointer rounded transition-all hover:bg-surface min-h-[52px]"
   [class.opacity-50]="isDone"
 >
-  @if (item().type === 'loop') {
+  @if (item().type === ItemType.Loop) {
     <button
       type="button"
       (click)="onToggleDone($event)"
@@ -43,9 +43,9 @@
       <p class="text-xs text-muted mt-0.5">→ {{ item().nextStep }}</p>
     }
 
-    @if (item().status === 'blocked' || item().status === 'waiting') {
+    @if (item().status === LoopStatus.Blocked || item().status === LoopStatus.Waiting) {
       <p class="text-xs text-faint mt-0.5 italic">
-        {{ item().status === 'blocked' ? 'blocked' : 'waiting' }}
+        {{ item().status === LoopStatus.Blocked ? 'blocked' : 'waiting' }}
         @if (item().blockedReason) { — {{ item().blockedReason }} }
       </p>
     }

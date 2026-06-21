@@ -7,6 +7,7 @@ import { ItemsService } from './items.service';
 const mockService = {
   create: jest.fn(),
   findAll: jest.fn(),
+  findById: jest.fn(),
   update: jest.fn(),
   remove: jest.fn(),
   search: jest.fn(),
@@ -54,6 +55,18 @@ describe('ItemsController', () => {
     expect(mockService.findAll).toHaveBeenCalledWith(
       { status: LoopStatus.Open, type: ItemType.Loop, context: undefined },
       { userId: 'user-1', sessionId: undefined },
+    );
+  });
+
+  it('findById passes id and owner', async () => {
+    mockService.findById.mockResolvedValue({ id: 'uuid-1' });
+    const req = makeReq({ sessionId: 'sid-1' });
+
+    await controller.findById('uuid-1', req);
+
+    expect(mockService.findById).toHaveBeenCalledWith(
+      'uuid-1',
+      { userId: undefined, sessionId: 'sid-1' },
     );
   });
 
