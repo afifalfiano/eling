@@ -1,0 +1,11 @@
+node_modules
+dist
+.angular
+.nx
+tmp
+*.log
+.env
+.env.*
+!.env.production.example
+.git
+coverage
