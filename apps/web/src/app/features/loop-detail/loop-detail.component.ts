@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, OnInit, computed, inject, signal } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { TranslocoModule } from '@jsverse/transloco';
+import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
 import { Context, ItemType, LoopStatus } from '@eling/shared';
 import type { Item, ItemHistory, UpdateItemDto } from '@eling/shared';
 import { ItemService } from '../../core/item.service';
@@ -19,6 +19,7 @@ export class LoopDetailComponent implements OnInit {
   private readonly router = inject(Router);
   private readonly itemService = inject(ItemService);
   private readonly toast = inject(ToastService);
+  private readonly transloco = inject(TranslocoService);
 
   protected readonly ItemType = ItemType;
   protected readonly LoopStatus = LoopStatus;
@@ -108,22 +109,22 @@ export class LoopDetailComponent implements OnInit {
 
     try {
       await this.itemService.update(this.id(), dto as UpdateItemDto);
-      this.toast.show('Tersimpan');
+      this.toast.show(this.transloco.translate('loopDetail.saved'));
       if (item.type === ItemType.Loop) await this.refreshHistory();
       await this.router.navigate(['/']);
     } catch {
-      this.toast.show('Gagal menyimpan', 'error');
+      this.toast.show(this.transloco.translate('loopDetail.saveError'), 'error');
     }
   }
 
   protected async onDelete(): Promise<void> {
-    if (!confirm('Hapus item ini?')) return;
+    if (!confirm(this.transloco.translate('loopDetail.deleteConfirm'))) return;
     try {
       await this.itemService.remove(this.id());
-      this.toast.show('Terhapus');
+      this.toast.show(this.transloco.translate('loopDetail.deleted'));
       await this.router.navigate(['/']);
     } catch {
-      this.toast.show('Gagal menghapus', 'error');
+      this.toast.show(this.transloco.translate('loopDetail.deleteError'), 'error');
     }
   }
 
@@ -132,15 +133,14 @@ export class LoopDetailComponent implements OnInit {
   }
 
   protected fmtField(field: string): string {
-    const labels: Record<string, string> = { status: 'Status', text: 'Teks', nextStep: 'Next step', blockedReason: 'Alasan blocked' };
-    return labels[field] ?? field;
+    const key = this.transloco.translate('loopDetail.field' + field.charAt(0).toUpperCase() + field.slice(1));
+    return key !== 'loopDetail.field' + field.charAt(0).toUpperCase() + field.slice(1) ? key : field;
   }
 
   protected fmtVal(field: string, val: string | null): string {
     if (val === null) return '—';
     if (field === 'status') {
-      const labels: Record<string, string> = { open: 'Open', blocked: 'Blocker', waiting: 'Menunggu', done: 'Selesai' };
-      return labels[val] ?? val;
+      return this.transloco.translate('loopDetail.val' + val.charAt(0).toUpperCase() + val.slice(1));
     }
     return val;
   }

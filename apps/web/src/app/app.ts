@@ -12,6 +12,7 @@ import { ItemService } from './core/item.service';
 import { ToastService } from './core/toast.service';
 
 const LANG_KEY = 'eling-lang';
+const THEME_KEY = 'eling-theme';
 
 @Component({
   selector: 'app-root',
@@ -35,8 +36,13 @@ const LANG_KEY = 'eling-lang';
               </svg>
             </button>
           }
-          <button (click)="toggleLang()" class="flex items-center justify-center min-w-11 h-11 text-xs font-mono text-muted hover:text-text rounded-lg hover:bg-border/30 active:scale-[0.98] transition-all border border-border px-2">
-            {{ 'app.langToggle' | transloco }}
+          <button (click)="toggleLang()" class="flex items-center justify-center min-w-11 h-11 text-xs font-mono text-muted hover:text-text rounded-lg hover:bg-border/30 active:scale-[0.98] transition-all border border-border px-2">{{ 'app.langToggle' | transloco }}</button>
+          <button (click)="toggleTheme()" class="flex items-center justify-center w-11 h-11 text-muted hover:text-text rounded-lg hover:bg-border/30 active:scale-[0.98] transition-all" [attr.aria-label]="'app.themeAriaLabel' | transloco">
+            @if (isDark()) {
+              <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="5"/><path stroke-linecap="round" d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+            } @else {
+              <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
+            }
           </button>
           @if (auth.isLoggedIn()) {
             <button (click)="onLogout()" class="flex items-center justify-center min-w-11 h-11 px-3 text-sm text-muted hover:text-text rounded-lg hover:bg-border/30 active:scale-[0.98] transition-all">{{ 'app.logout' | transloco }}</button>
@@ -54,12 +60,15 @@ const LANG_KEY = 'eling-lang';
       <div class="fixed top-4 right-4 z-50 flex flex-col gap-2 items-end pointer-events-none">
         @for (msg of toast.messages(); track msg.id) {
           <div
-            class="animate-slide-in pointer-events-auto bg-text text-bg text-sm px-4 py-3 rounded-lg shadow-lg min-h-[44px] flex items-center"
+            class="animate-slide-in pointer-events-auto bg-surface text-text border border-border text-sm px-4 py-3 rounded-lg shadow-lg min-h-[44px] flex items-center"
             [class.bg-done]="msg.type === 'success'"
             [class.text-white]="msg.type === 'success'"
             [class.bg-loop]="msg.type === 'info'"
             [class.bg-red-600]="msg.type === 'error'"
-            [class.text-white]="msg.type === 'error'"
+            [class.text-white]="msg.type === 'success' || msg.type === 'info' || msg.type === 'error'"
+            [class.border-done]="msg.type === 'success'"
+            [class.border-loop]="msg.type === 'info'"
+            [class.border-red-600]="msg.type === 'error'"
           >
             {{ msg.text }}
           </div>
@@ -75,12 +84,27 @@ export class App implements OnInit {
   private readonly items = inject(ItemService);
   private readonly transloco = inject(TranslocoService);
 
-  protected readonly lang = signal<string>('id');
+  protected readonly lang = signal<string>('en');
+  protected readonly isDark = signal(false);
 
   ngOnInit(): void {
-    const saved = localStorage.getItem(LANG_KEY) ?? 'id';
+    const saved = localStorage.getItem(LANG_KEY) ?? navigator.language.startsWith('id') ? 'id' : 'en';
     this.lang.set(saved);
     this.transloco.setActiveLang(saved);
+
+    const theme = localStorage.getItem(THEME_KEY);
+    if (theme === 'dark') {
+      this.isDark.set(true);
+      document.documentElement.classList.add('dark');
+      document.documentElement.classList.remove('light');
+    } else if (theme === 'light') {
+      document.documentElement.classList.add('light');
+      document.documentElement.classList.remove('dark');
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+      this.isDark.set(true);
+      document.documentElement.classList.add('dark');
+      document.documentElement.classList.remove('light');
+    }
   }
 
   protected toggleLang(): void {
@@ -90,9 +114,22 @@ export class App implements OnInit {
     localStorage.setItem(LANG_KEY, next);
   }
 
+  protected toggleTheme(): void {
+    this.isDark.update((v) => !v);
+    const next = this.isDark();
+    if (next) {
+      document.documentElement.classList.add('dark');
+      document.documentElement.classList.remove('light');
+    } else {
+      document.documentElement.classList.add('light');
+      document.documentElement.classList.remove('dark');
+    }
+    localStorage.setItem(THEME_KEY, next ? 'dark' : 'light');
+  }
+
   protected async onExport(): Promise<void> {
     await this.items.downloadExport();
-    this.toast.show('Export berhasil');
+    this.toast.show(this.transloco.translate('app.exportSuccess'));
   }
 
   protected async onLogout(): Promise<void> {

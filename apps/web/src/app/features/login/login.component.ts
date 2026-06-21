@@ -21,7 +21,7 @@ import { AuthService } from '../../core/auth.service';
       <input
         type="password"
         [(ngModel)]="password"
-        placeholder="{{ 'login.password' | transloco }}"
+        placeholder="{{ 'login.passwordLabel' | transloco }}"
         class="border border-border rounded-lg px-4 py-3 text-sm bg-surface min-h-[48px] focus:outline-none focus:ring-1 focus:ring-loop"
       />
       @if (error()) {

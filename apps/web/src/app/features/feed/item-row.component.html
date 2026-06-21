@@ -12,7 +12,7 @@
     <button
       type="button"
       (click)="onToggleDone($event)"
-      class="mt-0.5 flex-shrink-0 w-7 h-7 rounded-full border-2 flex items-center justify-center cursor-pointer transition-all hover:scale-110 active:scale-90"
+      class="mt-0.5 flex-shrink-0 w-12 h-12 rounded-full border-2 flex items-center justify-center cursor-pointer transition-all hover:scale-110 active:scale-90"
       [class.border-loop]="!isDone"
       [class.border-done]="isDone"
       [class.bg-done]="isDone"
@@ -45,13 +45,13 @@
 
     @if (item().status === LoopStatus.Blocked || item().status === LoopStatus.Waiting) {
       <p class="text-xs text-faint mt-0.5 italic">
-        {{ item().status === LoopStatus.Blocked ? 'blocked' : 'waiting' }}
+        {{ item().status === LoopStatus.Blocked ? ('itemRow.statusBlocked' | transloco) : ('itemRow.statusWaiting' | transloco) }}
         @if (item().blockedReason) { — {{ item().blockedReason }} }
       </p>
     }
   </div>
 
-  <span class="flex-shrink-0 text-xs px-2 py-1.5 min-h-7 flex items-center rounded-full font-medium transition-all self-center" [class]="contextColor">
+  <span       class="flex-shrink-0 text-xs px-3 py-1.5 min-h-12 flex items-center rounded-full font-medium transition-all self-center" [class]="contextColor">
     {{ item().context }}
   </span>
 </div>

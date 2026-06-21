@@ -20,7 +20,7 @@ export class CaptureBarComponent {
   protected readonly Context = Context;
 
   protected readonly text = signal('');
-  protected readonly type = signal<ItemType>(ItemType.Note);
+  protected readonly type = signal<ItemType>(ItemType.Loop);
   protected readonly context = signal<Context>(Context.Pribadi);
   protected readonly focused = signal(false);
 

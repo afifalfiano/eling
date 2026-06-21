@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
+import { TranslocoModule } from '@jsverse/transloco';
 import type { Item } from '@eling/shared';
 import { Context, ItemType, LoopStatus } from '@eling/shared';
 
@@ -6,6 +7,7 @@ import { Context, ItemType, LoopStatus } from '@eling/shared';
   selector: 'app-item-row',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [TranslocoModule],
   templateUrl: './item-row.component.html',
 })
 export class ItemRowComponent {

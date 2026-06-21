@@ -5,7 +5,9 @@
     "register": "Daftar",
     "logout": "Keluar",
     "exportAriaLabel": "Ekspor JSON",
-    "langToggle": "EN"
+    "langToggle": "EN",
+    "themeAriaLabel": "Ganti tema",
+    "exportSuccess": "Ekspor berhasil"
   },
   "login": {
     "title": "Masuk",
@@ -36,13 +38,22 @@
   "feed": {
     "loading": "Memuat...",
     "empty": "Kosong — kepalamu lega.",
-    "openCount": "{{ count }} loop terbuka"
+    "openCount": "{{ count }} loop terbuka",
+    "staleCount": "{{ count }} loop butuh triase (sudah >7 hari)",
+    "loadError": "Gagal memuat data",
+    "markedDone": "✓ Selesai",
+    "reopened": "↻ Dibuka kembali",
+    "updateError": "Gagal update status"
   },
   "capture": {
     "placeholder": "Apa yang ada di kepalamu?",
     "captureAriaLabel": "Tangkap",
     "loopLabel": "○ loop",
     "noteLabel": "· note"
+  },
+  "itemRow": {
+    "statusBlocked": "blocked",
+    "statusWaiting": "waiting"
   },
   "context": {
     "kerja": "kerja",
@@ -63,7 +74,22 @@
     "blockedReasonLabel": "Alasan blocked",
     "blockedReasonPlaceholder": "Kenapa blocked?",
     "notFound": "Item tidak ditemukan.",
-    "delete": "Hapus"
+    "delete": "Hapus",
+    "history": "Riwayat",
+    "noHistory": "Belum ada perubahan",
+    "saved": "Tersimpan",
+    "saveError": "Gagal menyimpan",
+    "deleted": "Terhapus",
+    "deleteError": "Gagal menghapus",
+    "deleteConfirm": "Hapus item ini?",
+    "fieldStatus": "Status",
+    "fieldText": "Teks",
+    "fieldNextStep": "Next step",
+    "fieldBlockedReason": "Alasan blocked",
+    "valOpen": "Open",
+    "valBlocked": "Blocker",
+    "valWaiting": "Menunggu",
+    "valDone": "Selesai"
   },
   "notFound": {
     "message": "Halaman tidak ditemukan.",

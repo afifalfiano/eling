@@ -21,10 +21,15 @@
         <p class="text-muted text-sm">{{ 'feed.empty' | transloco }}</p>
       </div>
     } @else {
-      <div class="py-2 px-1 animate-fade-in-up">
+      <div class="py-2 px-1 animate-fade-in-up space-y-1">
         <p class="text-xs text-faint">
           {{ 'feed.openCount' | transloco: { count: openCount } }}
         </p>
+        @if (staleItems().length > 0) {
+          <p class="text-xs text-loop font-medium">
+            {{ 'feed.staleCount' | transloco: { count: staleItems().length } }}
+          </p>
+        }
       </div>
 
       @for (item of orderedItems(); track item.id) {

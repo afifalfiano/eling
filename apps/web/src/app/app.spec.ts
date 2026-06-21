@@ -17,6 +17,7 @@ describe('App', () => {
       setItem: (k: string, v: string) => { store[k] = v; },
       removeItem: (k: string) => { delete store[k]; },
     });
+    vi.stubGlobal('matchMedia', (q: string) => ({ matches: false, media: q, onchange: null, addListener: () => {}, removeListener: () => {}, addEventListener: () => {}, removeEventListener: () => {}, dispatchEvent: () => false }));
     await TestBed.configureTestingModule({
       imports: [
         App,

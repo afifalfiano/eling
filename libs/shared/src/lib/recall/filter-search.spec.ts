@@ -1,4 +1,3 @@
-import { describe, it, expect } from 'vitest';
 import { filterSearch } from './filter-search';
 import { Context, ItemType } from '../item.model';
 import type { Item } from '../item.model';

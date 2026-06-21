@@ -5,7 +5,9 @@
     "register": "Register",
     "logout": "Logout",
     "exportAriaLabel": "Export JSON",
-    "langToggle": "ID"
+    "langToggle": "ID",
+    "themeAriaLabel": "Toggle theme",
+    "exportSuccess": "Export successful"
   },
   "login": {
     "title": "Sign in",
@@ -36,13 +38,22 @@
   "feed": {
     "loading": "Loading...",
     "empty": "Empty — your head is clear.",
-    "openCount": "{{ count }} open loops"
+    "openCount": "{{ count }} open loops",
+    "staleCount": "{{ count }} stale loop{{ count === 1 ? '' : 's' }} — review needed",
+    "loadError": "Failed to load data",
+    "markedDone": "✓ Done",
+    "reopened": "↻ Reopened",
+    "updateError": "Failed to update status"
   },
   "capture": {
     "placeholder": "What's on your mind?",
     "captureAriaLabel": "Capture",
     "loopLabel": "○ loop",
     "noteLabel": "· note"
+  },
+  "itemRow": {
+    "statusBlocked": "blocked",
+    "statusWaiting": "waiting"
   },
   "context": {
     "kerja": "work",
@@ -63,7 +74,22 @@
     "blockedReasonLabel": "Blocked reason",
     "blockedReasonPlaceholder": "Why is it blocked?",
     "notFound": "Item not found.",
-    "delete": "Delete"
+    "delete": "Delete",
+    "history": "History",
+    "noHistory": "No changes yet",
+    "saved": "Saved",
+    "saveError": "Failed to save",
+    "deleted": "Deleted",
+    "deleteError": "Failed to delete",
+    "deleteConfirm": "Delete this item?",
+    "fieldStatus": "Status",
+    "fieldText": "Text",
+    "fieldNextStep": "Next step",
+    "fieldBlockedReason": "Block reason",
+    "valOpen": "Open",
+    "valBlocked": "Blocked",
+    "valWaiting": "Waiting",
+    "valDone": "Done"
   },
   "notFound": {
     "message": "Page not found.",

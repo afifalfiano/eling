@@ -7,7 +7,7 @@ import type { Item } from '@eling/shared';
 import { FeedComponent } from './feed.component';
 import { ItemService } from '../../core/item.service';
 import { ToastService } from '../../core/toast.service';
-import { TranslocoModule } from '@jsverse/transloco';
+import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
 import { ItemRowComponent } from './item-row.component';
 import { CaptureBarComponent } from '../capture/capture-bar.component';
 
@@ -46,7 +46,13 @@ describe('FeedComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [FeedComponent, MockItemRow, MockCaptureBar, MockTranslocoPipe],
-      providers: [ItemService, ToastService, provideHttpClient(), provideRouter([])],
+      providers: [
+        ItemService,
+        ToastService,
+        provideHttpClient(),
+        provideRouter([]),
+        { provide: TranslocoService, useValue: { translate: (key: string) => key } },
+      ],
     })
       .overrideComponent(FeedComponent, {
         remove: { imports: [ItemRowComponent, CaptureBarComponent, TranslocoModule] as any[] },
@@ -83,7 +89,7 @@ describe('FeedComponent', () => {
     fixture.detectChanges();
     await fixture.whenStable();
     fixture.detectChanges();
-    expect(toastSpy).toHaveBeenCalledWith('Gagal memuat data', 'error');
+    expect(toastSpy).toHaveBeenCalledWith('feed.loadError', 'error');
   });
 
   it('shows open count', async () => {
