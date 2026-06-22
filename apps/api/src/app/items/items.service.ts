@@ -134,11 +134,53 @@ export class ItemsService {
   }
 
   async search(q: string, owner: Owner): Promise<Item[]> {
-    const rows = await this.prisma.item.findMany({
-      where: ownerWhere(owner),
-      orderBy: { createdAt: 'desc' },
-    });
-    return filterSearch(rows.map(toItem), q);
+    const needle = q.trim().toLowerCase();
+    if (needle === '') {
+      const rows = await this.prisma.item.findMany({
+        where: ownerWhere(owner),
+        orderBy: { createdAt: 'desc' },
+      });
+      return rows.map(toItem);
+    }
+
+    const [itemRows, historyRows] = await Promise.all([
+      this.prisma.item.findMany({
+        where: ownerWhere(owner),
+        orderBy: { createdAt: 'desc' },
+      }),
+      this.prisma.itemHistory.findMany({
+        where: {
+          item: ownerWhere(owner),
+          OR: [
+            { fromValue: { contains: needle, mode: 'insensitive' } },
+            { toValue: { contains: needle, mode: 'insensitive' } },
+          ],
+        },
+        include: { item: true },
+        orderBy: { createdAt: 'desc' },
+      }),
+    ]);
+
+    const textMatches = filterSearch(itemRows.map(toItem), q);
+
+    const historyItemIds = new Set<string>();
+    const historyItemMap = new Map<string, Item>();
+    for (const hr of historyRows) {
+      if (!historyItemIds.has(hr.item.id)) {
+        historyItemIds.add(hr.item.id);
+        historyItemMap.set(hr.item.id, toItem(hr.item));
+      }
+    }
+
+    const seen = new Set(textMatches.map((i) => i.id));
+    const merged = [...textMatches];
+    for (const item of historyItemMap.values()) {
+      if (!seen.has(item.id)) {
+        merged.push(item);
+      }
+    }
+
+    return merged;
   }
 
   async export(owner: Owner): Promise<Item[]> {

@@ -211,6 +211,7 @@ describe('ItemsService', () => {
         { ...baseRow, id: 'b', text: 'review PR', nextStep: null },
       ];
       mockPrisma.item.findMany.mockResolvedValue(rows);
+      mockPrisma.itemHistory.findMany.mockResolvedValue([]);
 
       const result = await service.search('susu', anonOwner);
 
