@@ -61,7 +61,8 @@ services:
     container_name: eling-caddy-1
     restart: always
     ports:
-      - "127.0.0.1:8080:80"    # internal — host Nginx proxy ke sini
+      - "127.0.0.1:8080:80"    # host Nginx proxy
+      - "8081:80"              # temporary — akses langsung via http://IP:8081
     environment:
       DOMAIN: ${DOMAIN}
     volumes:
