@@ -59,44 +59,51 @@
 
       <div class="space-y-2">
         <p class="text-xs text-muted uppercase tracking-wide">{{ 'loopDetail.statusLabel' | transloco }}</p>
-        <div class="flex flex-col gap-2">
+        <div class="flex flex-wrap gap-1.5">
           <button
             data-testid="btn-done"
             type="button"
             (click)="selectStatus(LoopStatus.Done)"
-            [class.bg-green-100]="selectedStatus() === LoopStatus.Done"
-            class="w-full py-2.5 min-h-[48px] rounded-lg border border-done text-done text-sm font-medium hover:bg-green-100 active:scale-[0.98] transition-all"
+            class="px-3 py-1.5 min-h-8 text-xs rounded-full border transition-all"
+            [class.bg-done]="selectedStatus() === LoopStatus.Done"
+            [class.text-white]="selectedStatus() === LoopStatus.Done"
+            [class.border-done]="selectedStatus() === LoopStatus.Done"
+            [class.border-border]="selectedStatus() !== LoopStatus.Done"
+            [class.text-muted]="selectedStatus() !== LoopStatus.Done"
           >{{ 'loopDetail.markDone' | transloco }}</button>
-
           <button
             data-testid="btn-blocked"
             type="button"
             (click)="selectStatus(LoopStatus.Blocked)"
-            [class.bg-loop/10]="selectedStatus() === LoopStatus.Blocked"
+            class="px-3 py-1.5 min-h-8 text-xs rounded-full border transition-all"
+            [class.bg-loop]="selectedStatus() === LoopStatus.Blocked"
+            [class.text-white]="selectedStatus() === LoopStatus.Blocked"
             [class.border-loop]="selectedStatus() === LoopStatus.Blocked"
-            [class.text-loop]="selectedStatus() === LoopStatus.Blocked"
-            class="w-full py-2.5 min-h-[48px] rounded-lg border border-border text-muted text-sm hover:bg-gray-50 active:scale-[0.98] transition-all"
+            [class.border-border]="selectedStatus() !== LoopStatus.Blocked"
+            [class.text-muted]="selectedStatus() !== LoopStatus.Blocked"
           >{{ 'loopDetail.blocked' | transloco }}</button>
-
           <button
             data-testid="btn-waiting"
             type="button"
             (click)="selectStatus(LoopStatus.Waiting)"
-            [class.bg-loop/10]="selectedStatus() === LoopStatus.Waiting"
+            class="px-3 py-1.5 min-h-8 text-xs rounded-full border transition-all"
+            [class.bg-loop]="selectedStatus() === LoopStatus.Waiting"
+            [class.text-white]="selectedStatus() === LoopStatus.Waiting"
             [class.border-loop]="selectedStatus() === LoopStatus.Waiting"
-            [class.text-loop]="selectedStatus() === LoopStatus.Waiting"
-            class="w-full py-2.5 min-h-[48px] rounded-lg border border-border text-muted text-sm hover:bg-gray-50 active:scale-[0.98] transition-all"
+            [class.border-border]="selectedStatus() !== LoopStatus.Waiting"
+            [class.text-muted]="selectedStatus() !== LoopStatus.Waiting"
           >{{ 'loopDetail.waiting' | transloco }}</button>
-
           <button
             data-testid="btn-open"
             type="button"
             (click)="selectStatus(LoopStatus.Open)"
-            [class.bg-gray-100]="selectedStatus() === LoopStatus.Open"
-            [class.border-gray-400]="selectedStatus() === LoopStatus.Open"
+            class="px-3 py-1.5 min-h-8 text-xs rounded-full border transition-all"
+            [class.bg-gray-200]="selectedStatus() === LoopStatus.Open"
             [class.text-text]="selectedStatus() === LoopStatus.Open"
             [class.font-medium]="selectedStatus() === LoopStatus.Open"
-            class="w-full py-2.5 min-h-[48px] rounded-lg border border-border text-muted text-sm hover:bg-gray-50 active:scale-[0.98] transition-all"
+            [class.border-gray-400]="selectedStatus() === LoopStatus.Open"
+            [class.border-border]="selectedStatus() !== LoopStatus.Open"
+            [class.text-muted]="selectedStatus() !== LoopStatus.Open"
           >{{ 'loopDetail.reopen' | transloco }}</button>
         </div>
       </div>
@@ -147,7 +154,7 @@
     }
 
     @defer (on viewport) {
-      <div class="pt-4 border-t border-border max-h-48 overflow-y-auto space-y-2">
+      <div class="pt-4 border-t border-border max-h-80 overflow-y-auto space-y-2">
         <p class="text-xs text-muted uppercase tracking-wide">{{ 'loopDetail.history' | transloco }}</p>
         @if (history().length === 0) {
           <p class="text-xs text-muted">{{ 'loopDetail.noHistory' | transloco }}</p>
