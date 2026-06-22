@@ -33,9 +33,9 @@ export class ItemRowComponent {
 
   protected get contextColor(): string {
     const map: Record<Context, string> = {
-      [Context.Kerja]: 'text-ctx-kerja bg-blue-50',
-      [Context.Pribadi]: 'text-ctx-pribadi bg-amber-50',
-      [Context.Other]: 'text-ctx-other bg-gray-50',
+      [Context.Kerja]:   'text-ctx-kerja bg-blue-50 dark:bg-blue-950',
+      [Context.Pribadi]: 'text-ctx-pribadi bg-amber-50 dark:bg-amber-950',
+      [Context.Other]:   'text-ctx-other bg-gray-50 dark:bg-gray-800',
     };
     return map[this.item().context] ?? map[Context.Other];
   }

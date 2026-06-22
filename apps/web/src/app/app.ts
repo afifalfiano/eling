@@ -9,7 +9,7 @@ import { Router, RouterLink, RouterOutlet } from '@angular/router';
 import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
 import { AuthService } from './core/auth.service';
 import { ItemService } from './core/item.service';
-import { ToastService } from './core/toast.service';
+import { Toast, ToastService } from './core/toast.service';
 
 const LANG_KEY = 'eling-lang';
 const THEME_KEY = 'eling-theme';
@@ -59,19 +59,7 @@ const THEME_KEY = 'eling-theme';
 
       <div class="fixed top-4 right-4 z-50 flex flex-col gap-2 items-end pointer-events-none">
         @for (msg of toast.messages(); track msg.id) {
-          <div
-            class="animate-slide-in pointer-events-auto bg-text text-bg border border-border text-sm px-4 py-3 rounded-lg shadow-lg min-h-[44px] flex items-center"
-            [class.bg-done]="msg.type === 'success'"
-            [class.text-white]="msg.type === 'success'"
-            [class.bg-loop]="msg.type === 'info'"
-            [class.bg-red-600]="msg.type === 'error'"
-            [class.text-white]="msg.type === 'success' || msg.type === 'info' || msg.type === 'error'"
-            [class.border-done]="msg.type === 'success'"
-            [class.border-loop]="msg.type === 'info'"
-            [class.border-red-600]="msg.type === 'error'"
-          >
-            {{ msg.text }}
-          </div>
+          <div [class]="toastClass(msg.type)">{{ msg.text }}</div>
         }
       </div>
     </div>
@@ -120,6 +108,14 @@ export class App implements OnInit {
   protected async onExport(): Promise<void> {
     await this.items.downloadExport();
     this.toast.show(this.transloco.translate('app.exportSuccess'));
+  }
+
+  protected toastClass(type: Toast['type']): string {
+    const base = 'animate-slide-in pointer-events-auto text-sm px-4 py-3 rounded-lg shadow-lg min-h-[44px] flex items-center border';
+    if (type === 'success') return `${base} bg-done text-white border-done dark:bg-surface dark:text-done dark:border-done`;
+    if (type === 'info')    return `${base} bg-loop text-white border-loop dark:bg-surface dark:text-loop dark:border-loop`;
+    if (type === 'error')   return `${base} bg-red-600 text-white border-red-600`;
+    return `${base} bg-text text-bg border-border`;
   }
 
   protected async onLogout(): Promise<void> {

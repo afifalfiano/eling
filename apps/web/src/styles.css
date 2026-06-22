@@ -1,17 +1,19 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:is(.dark, .dark *));
+
 @theme {
   --color-bg: #FAFAF8;
   --color-surface: #FFFFFF;
   --color-text: #1F1E1C;
   --color-muted: #6B6760;
-  --color-faint: #9A9588;
+  --color-faint: #767068;
   --color-border: #E7E3DA;
-  --color-loop: #D85A30;
+  --color-loop: #BF5129;
   --color-done: #3B6D11;
-  --color-ctx-kerja: #378ADD;
-  --color-ctx-pribadi: #BA7517;
-  --color-ctx-other: #888780;
+  --color-ctx-kerja: #2B6FB8;
+  --color-ctx-pribadi: #8B5910;
+  --color-ctx-other: #5D5C57;
   --radius-DEFAULT: 8px;
   --radius-lg: 12px;
 }
@@ -23,11 +25,11 @@
   --color-muted: #A39E94;
   --color-border: #2E2E31;
   --color-loop: #E8794F;
-  --color-done: #3B6D11;
+  --color-done: #6CB33F;
   --color-ctx-kerja: #5BA3E6;
   --color-ctx-pribadi: #D4943A;
   --color-ctx-other: #A3A099;
-  --color-faint: #6B6760;
+  --color-faint: #908A83;
 }
 
 @keyframes fade-in-up {
