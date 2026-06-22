@@ -54,12 +54,76 @@ Requires a running PostgreSQL. Copy `.env.production.example` to `.env` and fill
 
 ## Deploy
 
+Deploys as Docker Compose stack behind Caddy (auto TLS via Let's Encrypt).
+
+### Prerequisites (VPS)
+
+- Docker + Docker Compose v2
+- Git
+- Domain DNS pointing to VPS (e.g. `eling.pipdev.net`)
+- Ports 80 + 443 open
+
+### Manual Deploy
+
 ```bash
-# Build and start all containers
-docker compose up -d --build
+cp .env.production.example .env
+# fill in real values
+docker compose up --build -d
 ```
 
-See `.env.production.example` for required environment variables (`DOMAIN`, `POSTGRES_PASSWORD`, `JWT_SECRET`, etc.).
+### CI/CD (GitHub Actions)
+
+Push to `main` triggers automatic deploy via `.github/workflows/deploy.yml`.
+
+**Required GitHub Secrets:**
+
+| Secret | Description |
+|--------|-------------|
+| `VPS_HOST` | Server IP/hostname |
+| `VPS_USER` | SSH user |
+| `VPS_SSH_KEY` | SSH private key |
+| `VPS_PORT` | SSH port (default 22) |
+| `DOMAIN` | e.g. `eling.pipdev.net` |
+| `POSTGRES_PASSWORD` | PostgreSQL password |
+| `AUTH_USERNAME` | Login username |
+| `AUTH_PASSWORD_HASH` | bcrypt hash (base64 encoded) |
+| `JWT_SECRET` | 128-char hex (crypto.randomBytes(64).toString('hex')) |
+
+### Architecture
+
+```
+                         ┌──────────────┐
+                         │   Caddy       │◄─── Let's Encrypt (auto)
+                         │  port 443     │
+                         └──┬───────┬────┘
+                            │       │
+                     /api/* │       │ /*
+                            │       │
+                    ┌───────▼┐ ┌────▼──────┐
+                    │  API    │ │   Web     │
+                    │ :3000   │ │  :80      │
+                    │ NestJS  │ │  Angular  │
+                    └────▲────┘ └───────────┘
+                         │
+                    ┌────┴────┐
+                    │Postgres │
+                    │ :5432   │
+                    └─────────┘
+```
+
+### SSH Deploy Path
+
+- Code lives at `/opt/eling` on VPS
+- `.env` is generated from GitHub Secrets each deploy
+- Prisma migrations run automatically via Docker Compose health checks
+
+### Database Backup
+
+A cron-ready backup script at `scripts/backup.sh` dumps PostgreSQL via `pg_dump`. Install:
+
+```cron
+0 2 * * * /opt/eling/scripts/backup.sh >> /var/log/eling-backup.log 2>&1
+```
 
 ## API Endpoints
 

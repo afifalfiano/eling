@@ -1,6 +1,7 @@
 services:
   postgres:
     image: postgres:16-alpine
+    container_name: eling-postgres-1
     restart: always
     environment:
       POSTGRES_DB: eling
@@ -20,34 +21,47 @@ services:
     build:
       context: .
       dockerfile: apps/api/Dockerfile
+    container_name: eling-api-1
     restart: always
+    depends_on:
+      postgres:
+        condition: service_healthy
+    ports:
+      - "127.0.0.1:3000:3000"   # host Nginx proxy ke sini
     environment:
       DATABASE_URL: postgresql://eling:${POSTGRES_PASSWORD}@postgres:5432/eling
       AUTH_USERNAME: ${AUTH_USERNAME}
       AUTH_PASSWORD_HASH: ${AUTH_PASSWORD_HASH}
       JWT_SECRET: ${JWT_SECRET}
       CORS_ORIGIN: https://${DOMAIN}
-    depends_on:
-      postgres:
-        condition: service_healthy
+      PORT: 3000
+      NODE_ENV: production
     networks:
       - internal
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "--tries=1", "http://localhost:3000/api/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
 
   web:
     build:
       context: .
       dockerfile: apps/web/Dockerfile
+    container_name: eling-web-1
     restart: always
+    depends_on:
+      - api
     networks:
       - internal
 
   caddy:
     image: caddy:2-alpine
+    container_name: eling-caddy-1
     restart: always
     ports:
-      - "80:80"
-      - "443:443"
-      - "443:443/udp"
+      - "127.0.0.1:8080:80"    # internal — host Nginx proxy ke sini
     environment:
       DOMAIN: ${DOMAIN}
     volumes:
@@ -55,8 +69,10 @@ services:
       - caddy_data:/data
       - caddy_config:/config
     depends_on:
-      - api
-      - web
+      api:
+        condition: service_healthy
+      web:
+        condition: service_started
     networks:
       - internal
 

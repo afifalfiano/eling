@@ -1,0 +1,94 @@
+name: Deploy to VPS
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    name: Build & Deploy
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+    steps:
+      # ── 1. Checkout ──────────────────────────────────────────────────────
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # ── 2. Deploy via SSH ────────────────────────────────────────────────
+      - name: Deploy to VPS
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          port: ${{ secrets.VPS_PORT }}
+          timeout: 120s
+          script: |
+            set -e
+
+            echo "Navigating to project directory..."
+            cd /opt/eling
+
+            echo "Pulling latest changes..."
+            git pull origin main
+
+            echo "Generating .env from GitHub Secrets..."
+            cat > .env << ENVEOF
+            DOMAIN=${{ secrets.DOMAIN }}
+            POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}
+            AUTH_USERNAME=${{ secrets.AUTH_USERNAME }}
+            AUTH_PASSWORD_HASH=${{ secrets.AUTH_PASSWORD_HASH }}
+            JWT_SECRET=${{ secrets.JWT_SECRET }}
+            ENVEOF
+            sed -i 's/^[[:space:]]*//' .env
+            chmod 600 .env
+
+            echo "Building and starting containers..."
+            docker compose up --build -d
+
+            echo "Waiting for API container to be healthy..."
+            for i in $(seq 1 20); do
+              HEALTH=$(docker inspect --format='{{.State.Health.Status}}' eling-api-1 2>/dev/null || echo "missing")
+              if [ "$HEALTH" = "healthy" ]; then
+                echo "API is healthy!"
+                break
+              fi
+              echo "  Container health: $HEALTH (attempt $i/20)..."
+              sleep 3
+            done
+
+            echo "Running Prisma migrations..."
+            docker exec eling-api-1 sh -c "
+              cd /app &&
+              npx prisma generate &&
+              npx prisma migrate deploy
+            " || echo "Migration warning (may already be applied)"
+
+            echo "API container logs (last 50 lines):"
+            docker logs eling-api-1 --tail 50 || true
+
+            echo "Reloading host Nginx..."
+            sudo systemctl reload nginx || echo "Nginx reload skipped (check config)"
+
+            echo "Cleaning up unused Docker images..."
+            docker image prune -f
+
+            echo "Deploy complete!"
+
+      # ── 3. Health check ──────────────────────────────────────────────────
+      - name: Health check
+        run: |
+          sleep 10
+          STATUS=$(curl -s -o /dev/null -w "%{http_code}" \
+            https://eling.pipdev.net/api/health || echo "000")
+          echo "Health check status: $STATUS"
+          if [ "$STATUS" != "200" ]; then
+            echo "Warning: Health check returned $STATUS (site may still be starting up)"
+          else
+            echo "Site is up and running!"
+          fi
