@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/env bash
 # Daily Postgres backup for Eling.
 # Run from the host where Docker is running.
 # Assumes the compose project is named "eling" (directory name = project name).
@@ -11,7 +11,13 @@
 #   gunzip -c /var/backups/eling/eling-YYYY-MM-DD_HH-MM-SS.sql.gz | \
 #     docker exec -i eling-postgres-1 psql -U eling eling
 
-set -e
+set -euo pipefail
+
+# Pastikan container DB jalan sebelum backup
+if ! docker ps --format '{{.Names}}' | grep -q "^${CONTAINER:-eling-postgres-1}$"; then
+  echo "[$(date)] ERROR: container ${CONTAINER:-eling-postgres-1} tidak jalan, backup dibatalkan" >&2
+  exit 1
+fi
 
 BACKUP_DIR="${BACKUP_DIR:-/var/backups/eling}"
 CONTAINER="${CONTAINER:-eling-postgres-1}"
