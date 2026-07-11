@@ -28,5 +28,14 @@ docker exec "$CONTAINER" pg_dump -U "$DB_USER" "$DB_NAME" | gzip > "$OUTFILE"
 
 echo "[$(date)] Backup written: $OUTFILE"
 
+# Upload ke Google Drive via rclone (skip kalau remote belum dikonfigurasi)
+GDRIVE_REMOTE="${GDRIVE_REMOTE:-gdrive:eling-backups}"
+if command -v rclone >/dev/null 2>&1 && rclone listremotes 2>/dev/null | grep -q '^gdrive:'; then
+  rclone copy "$OUTFILE" "$GDRIVE_REMOTE/" && echo "[$(date)] Uploaded to $GDRIVE_REMOTE"
+  rclone delete --min-age 30d "$GDRIVE_REMOTE/" || true
+else
+  echo "[$(date)] WARN: rclone gdrive not configured, skipping upload"
+fi
+
 find "$BACKUP_DIR" -name "eling-*.sql.gz" -mtime +"$KEEP_DAYS" -delete
 echo "[$(date)] Pruned backups older than $KEEP_DAYS days"

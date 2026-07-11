@@ -8,7 +8,8 @@ services:
       POSTGRES_USER: eling
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     volumes:
-      - pgdata:/var/lib/postgresql/data
+      # Bind mount ke folder host — data aman walau container/volume dihapus
+      - /opt/eling-data/postgres:/var/lib/postgresql/data
     networks:
       - internal
     healthcheck:
@@ -62,7 +63,6 @@ services:
     restart: always
     ports:
       - "127.0.0.1:8080:80"    # host Nginx proxy
-      - "8081:80"              # temporary — akses langsung via http://IP:8081
     environment:
       DOMAIN: ${DOMAIN}
     volumes:
@@ -78,7 +78,6 @@ services:
       - internal
 
 volumes:
-  pgdata:
   caddy_data:
   caddy_config:
 
